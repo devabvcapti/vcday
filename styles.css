@@ -1,18 +1,32 @@
 :root {
-  --ink: #0e1733;
-  --ink-soft: #1f2937;
-  --ink-faint: #6b7280;
-  --bg: #f7f8fa;
-  --surface: #ffffff;
-  --line: #e5e7eb;
-  --accent: #4dc82f;
-  --accent-ink: #0e1733;
+  --navy: #1a2a5e;
+  --navy-profundo: #0e1733;
+  --navy-hover: #142248;
+  --verde: #4dc82f;
+  --verde-escuro: #3aa622;
+  --verde-texto: #2f7d14;
+  --borda: #e5e7eb;
+  --texto: #1f2937;
+  --texto-secundario: #6b7280;
+  --fundo: #f7f8fa;
+  --branco: #ffffff;
+
+  --ink: var(--navy);
+  --ink-soft: var(--texto);
+  --ink-faint: var(--texto-secundario);
+  --bg: var(--fundo);
+  --surface: var(--branco);
+  --line: var(--borda);
+  --accent: var(--verde);
+  --accent-hover: var(--verde-escuro);
+  --accent-ink: var(--navy-profundo);
   --accent-soft: #e3f7dc;
-  --live: #1f7a34;
+  --live: var(--verde-texto);
   --live-soft: #e3f7dc;
   --danger: #b3483f;
   --danger-soft: #f7e6e4;
-  --radius: 14px;
+  --radius: 6px;
+  --radius-sm: 4px;
   --shadow: 0 1px 2px rgba(14, 23, 51, 0.06), 0 8px 24px -12px rgba(14, 23, 51, 0.18);
 }
 
@@ -21,13 +35,11 @@
     --ink: #eef1f7;
     --ink-soft: #c3c9d6;
     --ink-faint: #8891a3;
-    --bg: #0e1733;
-    --surface: #1a2a5e;
+    --bg: var(--navy-profundo);
+    --surface: var(--navy);
     --line: #2c3d70;
-    --accent: #4dc82f;
-    --accent-ink: #0e1733;
     --accent-soft: rgba(77, 200, 47, 0.16);
-    --live: #4dc82f;
+    --live: var(--verde);
     --live-soft: rgba(77, 200, 47, 0.14);
     --danger: #e2897c;
     --danger-soft: rgba(179, 72, 63, 0.18);
@@ -39,13 +51,11 @@
   --ink: #eef1f7;
   --ink-soft: #c3c9d6;
   --ink-faint: #8891a3;
-  --bg: #0e1733;
-  --surface: #1a2a5e;
+  --bg: var(--navy-profundo);
+  --surface: var(--navy);
   --line: #2c3d70;
-  --accent: #4dc82f;
-  --accent-ink: #0e1733;
   --accent-soft: rgba(77, 200, 47, 0.16);
-  --live: #4dc82f;
+  --live: var(--verde);
   --live-soft: rgba(77, 200, 47, 0.14);
   --danger: #e2897c;
   --danger-soft: rgba(179, 72, 63, 0.18);
@@ -62,11 +72,13 @@ body {
   color: var(--ink-soft);
   font-family: "Source Sans 3", system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
-  padding-inline: 20px;
 }
 
 h1, h2, h3 {
   font-family: "Source Serif 4", Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.08;
   text-wrap: balance;
   margin: 0;
   color: var(--ink);
@@ -79,29 +91,43 @@ h1, h2, h3 {
 
 a { color: inherit; }
 
+/* Barra de marca ABVCAP: navy + filete verde, igual ao pesquisa.abvcap.com.br */
+.site-topbar {
+  background: var(--navy);
+}
+
+.site-topbar-inner {
+  max-width: 640px;
+  margin-inline: auto;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+}
+
+.site-topbar .brand-logo {
+  height: 24px;
+  width: auto;
+  display: block;
+  margin: 0;
+}
+
+.site-topbar-stripe {
+  height: 4px;
+  background: var(--verde);
+}
+
 .wrap {
   max-width: 640px;
   margin-inline: auto;
-  padding-block: 32px 64px;
-}
-
-.brand-logo {
-  height: 26px;
-  width: auto;
-  display: block;
-  margin-bottom: 14px;
+  padding: 32px 20px 64px;
 }
 
 .eyebrow {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--accent-ink);
-  background: var(--accent-soft);
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 999px;
+  color: var(--verde-texto);
 }
 
 .header {
@@ -111,7 +137,7 @@ a { color: inherit; }
   margin-bottom: 28px;
 }
 
-.header h1 { font-size: 28px; font-weight: 600; }
+.header h1 { font-size: 28px; }
 .header p { margin: 0; color: var(--ink-soft); font-size: 15px; }
 
 .card {
@@ -137,7 +163,7 @@ a { color: inherit; }
   border-left: 3px solid transparent;
 }
 
-.panel-row.is-live { border-left-color: var(--live); }
+.panel-row.is-live { border-left-color: var(--verde); }
 
 .panel-row .time {
   font-family: "IBM Plex Mono", monospace;
@@ -160,32 +186,35 @@ a { color: inherit; }
   letter-spacing: 0.06em;
   text-transform: uppercase;
   padding: 3px 8px;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   white-space: nowrap;
 }
 
 .tag.live { background: var(--live-soft); color: var(--live); }
-.tag.soon { background: var(--accent-soft); color: var(--accent-ink); }
+.tag.soon { background: var(--accent-soft); color: var(--verde-texto); }
 .tag.done { background: var(--line); color: var(--ink-faint); }
 
 .btn {
   appearance: none;
   border: none;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   padding: 12px 18px;
   font-family: inherit;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.08s ease, opacity 0.15s ease;
+  transition: background-color 0.12s ease, transform 0.08s ease, opacity 0.15s ease;
 }
 
 .btn:active { transform: scale(0.98); }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.btn-accent { background: var(--accent); color: var(--accent-ink); }
-.btn-live { background: var(--live); color: var(--live-soft); }
-.btn-ghost { background: transparent; color: var(--ink-soft); border: 1px solid var(--line); }
+.btn-accent { background: var(--verde); color: var(--navy-profundo); }
+.btn-accent:hover:not(:disabled) { background: var(--accent-hover); }
+.btn-live { background: var(--verde); color: var(--navy-profundo); }
+.btn-live:hover:not(:disabled) { background: var(--accent-hover); }
+.btn-ghost { background: transparent; color: var(--navy); border: 1px solid var(--navy); }
+.btn-ghost:hover:not(:disabled) { background: rgba(26, 42, 94, 0.06); }
 .btn-danger-ghost { background: var(--danger-soft); color: var(--danger); }
 .btn-block { width: 100%; }
 
@@ -204,13 +233,13 @@ textarea, input[type="text"] {
   color: var(--ink);
   background: var(--bg);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   padding: 12px 14px;
   resize: vertical;
 }
 
 textarea:focus, input[type="text"]:focus {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--verde);
   outline-offset: 1px;
 }
 

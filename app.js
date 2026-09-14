@@ -54,6 +54,10 @@ async function fetchPanel(id) {
 const PANEL_GRACE_MINUTES = 15;
 
 function panelPhase(panel, nowMin) {
+  // Permite forcar um status manualmente (treinamento, demonstracao) sem
+  // depender do horario real. Null/vazio = comportamento normal por horario.
+  if (panel.status_override) return panel.status_override;
+
   const start = timeToMinutes(panel.starts_at);
   const end = timeToMinutes(panel.ends_at) + PANEL_GRACE_MINUTES;
   if (nowMin >= start && nowMin < end) return "live";

@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Enviar pergunta · VC Day</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <span class="eyebrow" id="panel-time">VC Day</span>
+      <h1 id="panel-name">Carregando painel…</h1>
+    </div>
+
+    <div class="card" style="padding: 22px;" id="form-card">
+      <form id="question-form">
+        <div class="field">
+          <label for="question">Sua pergunta</label>
+          <textarea id="question" rows="4" maxlength="500" placeholder="Escreva sua pergunta para o painelista…" required></textarea>
+          <div class="hint" id="count-hint">0/500</div>
+        </div>
+        <div class="field">
+          <label for="author">Seu nome e empresa <span style="font-weight: 400; text-transform: none; letter-spacing: normal;">(opcional)</span></label>
+          <input type="text" id="author" maxlength="120" placeholder="Ex.: Maria Silva, Fundo XP" />
+        </div>
+        <input type="text" id="website" name="website" class="honeypot" tabindex="-1" autocomplete="off" />
+        <button type="submit" class="btn btn-accent btn-block" id="submit-btn">Enviar pergunta</button>
+      </form>
+      <div id="success" style="display:none; text-align:center; padding: 12px 0;">
+        <h3 style="margin-bottom: 8px;">Pergunta enviada!</h3>
+        <p style="color: var(--ink-soft); margin: 0 0 18px;">Ela vai para a moderação — se for selecionada, aparecerá no telão e será lida ao painelista.</p>
+        <button class="btn btn-ghost btn-block" id="another-btn">Enviar outra pergunta</button>
+      </div>
+    </div>
+
+    <a class="footer-link" href="index.html">← Ver todos os painéis</a>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+  <script>
+    (async function () {
+      const panelId = qs("p");
+      const nameEl = document.getElementById("panel-name");
+      const timeEl = document.getElementById("panel-time");
+
+      if (!panelId) {
+        nameEl.textContent = "Painel não informado";
+        timeEl.textContent = "Escaneie o QR code exibido na tela do painel";
+        document.getElementById("form-card").style.display = "none";
+        return;
+      }
+
+      const panel = await fetchPanel(panelId);
+      if (!panel) {
+        nameEl.textContent = "Painel não encontrado";
+        document.getElementById("form-card").style.display = "none";
+        return;
+      }
+
+      nameEl.textContent = panel.name;
+      timeEl.textContent = `VC Day · ${formatRange(panel)}`;
+
+      const textarea = document.getElementById("question");
+      const countHint = document.getElementById("count-hint");
+      textarea.addEventListener("input", () => {
+        countHint.textContent = `${textarea.value.length}/500`;
+      });
+
+      const form = document.getElementById("question-form");
+      const submitBtn = document.getElementById("submit-btn");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const website = document.getElementById("website").value;
+        if (website) return; // honeypot tripped, silently ignore
+
+        const questionText = textarea.value.trim();
+        if (questionText.length < 3) return;
+        const author = document.getElementById("author").value.trim();
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Enviando…";
+
+        const { error } = await sb.from("vcday_questions").insert({
+          panel_id: panel.id,
+          question_text: questionText,
+          author_name: author || null,
+          status: "pending",
+        });
+
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Enviar pergunta";
+
+        if (error) {
+          console.error(error);
+          alert("Não foi possível enviar. Tente novamente.");
+          return;
+        }
+
+        form.style.display = "none";
+        document.getElementById("success").style.display = "block";
+      });
+
+      document.getElementById("another-btn").addEventListener("click", () => {
+        textarea.value = "";
+        countHint.textContent = "0/500";
+        document.getElementById("success").style.display = "none";
+        form.style.display = "block";
+      });
+    })();
+  </script>
+</body>
+</html>

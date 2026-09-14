@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Moderação · VC Day</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .wrap-wide { max-width: 860px; margin-inline: auto; padding-block: 28px 64px; }
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+    .tab {
+      font-size: 13px; font-weight: 600; padding: 8px 14px; border-radius: 999px;
+      border: 1px solid var(--line); background: var(--surface); color: var(--ink-soft);
+      cursor: pointer;
+    }
+    .tab.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+    .section-title {
+      font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--ink-faint); margin: 28px 0 12px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .qrow {
+      display: flex; gap: 16px; align-items: flex-start; padding: 16px 18px; margin-bottom: 10px;
+    }
+    .qrow .body { flex: 1; }
+    .qrow .text { font-size: 15px; line-height: 1.5; margin-bottom: 6px; }
+    .qrow .meta { font-size: 12px; color: var(--ink-faint); }
+    .qrow .actions { display: flex; gap: 8px; flex-shrink: 0; }
+    .qrow .actions .btn { padding: 8px 12px; font-size: 13px; white-space: nowrap; }
+    .status-pill {
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+      padding: 2px 8px; border-radius: 999px; margin-left: 8px;
+    }
+    .status-pill.approved { background: var(--live-soft); color: var(--live); }
+    .status-pill.rejected { background: var(--danger-soft); color: var(--danger); }
+    .status-pill.answered { background: var(--line); color: var(--ink-faint); }
+    .empty-note { color: var(--ink-faint); font-size: 14px; padding: 14px 18px; }
+    #login-card { max-width: 360px; margin: 15vh auto 0; padding: 26px; text-align: center; }
+    #login-card p { color: var(--ink-soft); font-size: 14px; margin: 8px 0 18px; }
+    #login-error { color: var(--danger); font-size: 13px; margin-top: 10px; min-height: 18px; }
+  </style>
+</head>
+<body>
+  <div id="login-view" class="wrap">
+    <div class="card" id="login-card">
+      <span class="eyebrow">VC Day</span>
+      <h1 style="font-size: 22px; margin-top: 10px;">Moderação de perguntas</h1>
+      <p>Digite a senha da equipe para aprovar e gerenciar as perguntas do público.</p>
+      <div class="field" style="text-align: left;">
+        <input type="text" id="passcode" placeholder="Senha da moderação" autocomplete="off" />
+      </div>
+      <button class="btn btn-accent btn-block" id="login-btn">Entrar</button>
+      <div id="login-error"></div>
+    </div>
+  </div>
+
+  <div id="admin-view" class="wrap-wide" style="display:none;">
+    <div class="header">
+      <span class="eyebrow">VC Day · Moderação</span>
+      <h1 id="panel-name" style="font-size: 24px;">Carregando…</h1>
+    </div>
+    <div class="tabs" id="panel-tabs"></div>
+
+    <div class="section-title">
+      <span>Pendentes <span id="count-pending" class="mono"></span></span>
+    </div>
+    <div id="list-pending"></div>
+
+    <div class="section-title">
+      <span>Fila aprovada (aparece no telão)</span>
+    </div>
+    <div id="list-approved"></div>
+
+    <div class="section-title">
+      <span>Histórico (respondidas / rejeitadas)</span>
+    </div>
+    <div id="list-history"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+  <script>
+    (function () {
+      let passcode = sessionStorage.getItem("vcday_mod_passcode") || "";
+      let panels = [];
+      let activePanelId = qs("p") || "";
+
+      const loginView = document.getElementById("login-view");
+      const adminView = document.getElementById("admin-view");
+      const loginError = document.getElementById("login-error");
+
+      async function tryLogin(code) {
+        const panelsList = await fetchPanels();
+        panels = panelsList;
+        if (!panels.length) {
+          loginError.textContent = "Nenhum painel cadastrado ainda.";
+          return false;
+        }
+        if (!activePanelId) activePanelId = (pickDefaultPanel(panels) || panels[0]).id;
+        const { error } = await sb.rpc("vcday_admin_list_questions", {
+          p_passcode: code,
+          p_panel_id: activePanelId,
+        });
+        if (error) {
+          loginError.textContent = "Senha incorreta.";
+          return false;
+        }
+        passcode = code;
+        sessionStorage.setItem("vcday_mod_passcode", code);
+        return true;
+      }
+
+      document.getElementById("login-btn").addEventListener("click", doLogin);
+      document.getElementById("passcode").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") doLogin();
+      });
+
+      async function doLogin() {
+        const code = document.getElementById("passcode").value.trim();
+        if (!code) return;
+        loginError.textContent = "";
+        const ok = await tryLogin(code);
+        if (ok) startAdmin();
+      }
+
+      function renderTabs() {
+        const tabsEl = document.getElementById("panel-tabs");
+        tabsEl.innerHTML = panels
+          .map(
+            (p) =>
+              `<button class="tab${p.id === activePanelId ? " active" : ""}" data-id="${p.id}">${escapeHtml(p.name.split(":")[0])}</button>`
+          )
+          .join("");
+        tabsEl.querySelectorAll(".tab").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            activePanelId = btn.dataset.id;
+            history.replaceState(null, "", `?p=${activePanelId}`);
+            renderTabs();
+            loadQuestions();
+          });
+        });
+      }
+
+      async function setStatus(id, status) {
+        const { error } = await sb.rpc("vcday_admin_set_status", {
+          p_passcode: passcode,
+          p_question_id: id,
+          p_status: status,
+        });
+        if (error) {
+          alert("Sessão expirou ou senha inválida. Recarregue a página.");
+          return;
+        }
+        loadQuestions();
+      }
+
+      function questionRow(q, actions) {
+        return `
+          <div class="card qrow">
+            <div class="body">
+              <div class="text">${escapeHtml(q.question_text)}</div>
+              <div class="meta">${q.author_name ? escapeHtml(q.author_name) + " · " : "Anônimo · "}${timeAgo(q.created_at)}</div>
+            </div>
+            <div class="actions">${actions}</div>
+          </div>
+        `;
+      }
+
+      async function loadQuestions() {
+        const panel = panels.find((p) => p.id === activePanelId);
+        document.getElementById("panel-name").textContent = panel ? panel.name : "Painel";
+
+        const { data, error } = await sb.rpc("vcday_admin_list_questions", {
+          p_passcode: passcode,
+          p_panel_id: activePanelId,
+        });
+        if (error) {
+          alert("Sessão expirou ou senha inválida. Recarregue a página.");
+          return;
+        }
+
+        const pending = data.filter((q) => q.status === "pending");
+        const approved = data.filter((q) => q.status === "approved");
+        const history = data
+          .filter((q) => q.status === "answered" || q.status === "rejected")
+          .slice(-20)
+          .reverse();
+
+        document.getElementById("count-pending").textContent = pending.length ? `(${pending.length})` : "";
+
+        document.getElementById("list-pending").innerHTML =
+          pending.length
+            ? pending
+                .map((q) =>
+                  questionRow(
+                    q,
+                    `<button class="btn btn-live" onclick="window.__setStatus('${q.id}','approved')">Aprovar</button>
+                     <button class="btn btn-danger-ghost" onclick="window.__setStatus('${q.id}','rejected')">Rejeitar</button>`
+                  )
+                )
+                .join("")
+            : '<div class="empty-note">Nenhuma pergunta pendente.</div>';
+
+        document.getElementById("list-approved").innerHTML =
+          approved.length
+            ? approved
+                .map((q) =>
+                  questionRow(
+                    q,
+                    `<button class="btn btn-ghost" onclick="window.__setStatus('${q.id}','answered')">Respondida</button>`
+                  )
+                )
+                .join("")
+            : '<div class="empty-note">Fila vazia.</div>';
+
+        document.getElementById("list-history").innerHTML =
+          history.length
+            ? history
+                .map((q) =>
+                  questionRow(
+                    q,
+                    `<span class="status-pill ${q.status}">${q.status === "answered" ? "Respondida" : "Rejeitada"}</span>`
+                  )
+                )
+                .join("")
+            : '<div class="empty-note">Ainda sem histórico.</div>';
+      }
+
+      window.__setStatus = setStatus;
+
+      let poller = null;
+      function startAdmin() {
+        loginView.style.display = "none";
+        adminView.style.display = "block";
+        renderTabs();
+        loadQuestions();
+        if (poller) clearInterval(poller);
+        poller = setInterval(loadQuestions, 3000);
+      }
+
+      // Auto-login if we already have a passcode from this session.
+      (async function init() {
+        if (passcode) {
+          const ok = await tryLogin(passcode);
+          if (ok) startAdmin();
+        }
+      })();
+    })();
+  </script>
+</body>
+</html>

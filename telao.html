@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Telão de perguntas · VC Day</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body { padding-inline: 0; }
+    .stage {
+      max-width: none;
+      margin: 0;
+      padding: 40px 56px;
+      min-height: 100vh;
+    }
+    .stage-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 40px;
+      gap: 24px;
+    }
+    .stage-header h1 { font-size: 32px; }
+    .stage-header .cta {
+      text-align: right;
+      color: var(--ink-soft);
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    .stage-header .cta .link {
+      font-family: "IBM Plex Mono", monospace;
+      color: var(--accent);
+      font-size: 20px;
+      font-weight: 600;
+    }
+    .queue { display: flex; flex-direction: column; gap: 22px; }
+    .qcard {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 28px 32px;
+    }
+    .qcard .num {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 22px;
+      color: var(--accent);
+      min-width: 44px;
+    }
+    .qcard .text {
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 30px;
+      line-height: 1.35;
+      flex: 1;
+      text-wrap: balance;
+    }
+    .qcard .author {
+      display: block;
+      margin-top: 14px;
+      font-family: "IBM Plex Sans", sans-serif;
+      font-size: 16px;
+      color: var(--ink-soft);
+      font-weight: 500;
+    }
+    .empty {
+      color: var(--ink-faint);
+      font-size: 20px;
+      padding: 48px 0;
+      text-align: center;
+    }
+    @media (max-width: 700px) {
+      .stage { padding: 24px; }
+      .stage-header { flex-direction: column; }
+      .stage-header .cta { text-align: left; }
+      .qcard .text { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="stage-header">
+      <div>
+        <span class="eyebrow">VC Day · Perguntas ao vivo</span>
+        <h1 id="panel-name">Carregando…</h1>
+      </div>
+      <div class="cta">
+        Envie sua pergunta em<br />
+        <span class="link" id="site-link">vcday.abvcap.com.br</span>
+      </div>
+    </div>
+    <div class="queue" id="queue">
+      <div class="empty">Aguardando perguntas aprovadas…</div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+  <script>
+    (function () {
+      document.getElementById("site-link").textContent = window.location.host || "este link";
+
+      let panelId = qs("p");
+      const nameEl = document.getElementById("panel-name");
+      const queueEl = document.getElementById("queue");
+
+      async function resolvePanel() {
+        if (panelId) return fetchPanel(panelId);
+        const panels = await fetchPanels();
+        const chosen = pickDefaultPanel(panels);
+        if (chosen) panelId = chosen.id;
+        return chosen;
+      }
+
+      async function render() {
+        const panel = await resolvePanel();
+        if (!panel) {
+          nameEl.textContent = "Nenhum painel cadastrado";
+          return;
+        }
+        nameEl.textContent = panel.name;
+
+        const { data, error } = await sb
+          .from("vcday_questions")
+          .select("*")
+          .eq("panel_id", panel.id)
+          .eq("status", "approved")
+          .order("created_at", { ascending: true })
+          .limit(5);
+
+        if (error) {
+          console.error(error);
+          return;
+        }
+
+        if (!data.length) {
+          queueEl.innerHTML = '<div class="empty">Aguardando perguntas aprovadas…</div>';
+          return;
+        }
+
+        queueEl.innerHTML = data
+          .map((q, i) => `
+            <div class="qcard">
+              <span class="num">${String(i + 1).padStart(2, "0")}</span>
+              <div>
+                <div class="text">${escapeHtml(q.question_text)}</div>
+                ${q.author_name ? `<span class="author">${escapeHtml(q.author_name)}</span>` : ""}
+              </div>
+            </div>
+          `)
+          .join("");
+      }
+
+      render();
+      setInterval(render, 4000);
+    })();
+  </script>
+</body>
+</html>

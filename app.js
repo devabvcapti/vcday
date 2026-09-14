@@ -1,0 +1,89 @@
+const SUPABASE_URL = "https://kcgwyzvwxmmygfdsetgd.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_DVhc89tNRiL1b20VJlMioQ_t0A47vAa";
+
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const TZ = "America/Sao_Paulo";
+
+function nowInSaoPaulo() {
+  return new Date(new Date().toLocaleString("en-US", { timeZone: TZ }));
+}
+
+function timeToMinutes(t) {
+  const [h, m] = t.split(":").map(Number);
+  return h * 60 + m;
+}
+
+function nowMinutesSaoPaulo() {
+  const d = nowInSaoPaulo();
+  return d.getHours() * 60 + d.getMinutes();
+}
+
+async function fetchPanels() {
+  const { data, error } = await sb
+    .from("vcday_panels")
+    .select("*")
+    .order("sort_order", { ascending: true });
+  if (error) {
+    console.error(error);
+    return [];
+  }
+  return data;
+}
+
+async function fetchPanel(id) {
+  const { data, error } = await sb
+    .from("vcday_panels")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) {
+    console.error(error);
+    return null;
+  }
+  return data;
+}
+
+function panelPhase(panel, nowMin) {
+  const start = timeToMinutes(panel.starts_at);
+  const end = timeToMinutes(panel.ends_at);
+  if (nowMin >= start && nowMin < end) return "live";
+  if (nowMin < start) return "soon";
+  return "done";
+}
+
+function formatRange(panel) {
+  return `${panel.starts_at.slice(0, 5)}–${panel.ends_at.slice(0, 5)}`;
+}
+
+function qs(name) {
+  return new URLSearchParams(window.location.search).get(name);
+}
+
+function timeAgo(iso) {
+  const diff = Math.max(0, Date.now() - new Date(iso).getTime());
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "agora";
+  if (mins === 1) return "há 1 min";
+  if (mins < 60) return `há ${mins} min`;
+  const hrs = Math.floor(mins / 60);
+  return `há ${hrs}h${mins % 60 ? (mins % 60) + "m" : ""}`;
+}
+
+function escapeHtml(s) {
+  return (s || "").replace(
+    /[&<>"']/g,
+    (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[c])
+  );
+}
+
+/** Picks the panel to default to: the one live now, else the next upcoming, else the last one. */
+function pickDefaultPanel(panels) {
+  if (!panels.length) return null;
+  const nowMin = nowMinutesSaoPaulo();
+  const live = panels.find((p) => panelPhase(p, nowMin) === "live");
+  if (live) return live;
+  const upcoming = panels.find((p) => panelPhase(p, nowMin) === "soon");
+  if (upcoming) return upcoming;
+  return panels[panels.length - 1];
+}

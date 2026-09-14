@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Perguntas · VC Day</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <span class="eyebrow">VC Day · 16 de setembro</span>
+      <h1>Pergunte aos painelistas</h1>
+      <p>Escolha o painel em andamento (ou o próximo) e envie sua pergunta. A equipe de moderação seleciona as perguntas que chegam ao painelista.</p>
+    </div>
+
+    <div id="panels" class="panel-list">
+      <div class="card" style="padding: 18px; color: var(--ink-faint);">Carregando painéis…</div>
+    </div>
+
+    <a class="footer-link" href="https://www.abvcap.com.br" target="_blank" rel="noopener">ABVCAP</a>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+  <script>
+    (async function () {
+      const panels = await fetchPanels();
+      const nowMin = nowMinutesSaoPaulo();
+      const list = document.getElementById("panels");
+
+      if (!panels.length) {
+        list.innerHTML = '<div class="card" style="padding:18px;color:var(--ink-faint);">Nenhum painel cadastrado ainda.</div>';
+        return;
+      }
+
+      list.innerHTML = panels
+        .map((p) => {
+          const phase = panelPhase(p, nowMin);
+          const tag =
+            phase === "live" ? '<span class="tag live">Ao vivo</span>' :
+            phase === "soon" ? '<span class="tag soon">Em breve</span>' :
+            '<span class="tag done">Encerrado</span>';
+          const liveClass = phase === "live" ? " is-live" : "";
+          return `
+            <a class="card panel-row${liveClass}" href="pergunta.html?p=${encodeURIComponent(p.id)}">
+              <span class="time">${formatRange(p)}</span>
+              <span class="title">${escapeHtml(p.name)}</span>
+              ${tag}
+            </a>
+          `;
+        })
+        .join("");
+    })();
+  </script>
+</body>
+</html>

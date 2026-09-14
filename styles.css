@@ -25,6 +25,8 @@
   --live-soft: #e3f7dc;
   --danger: #b3483f;
   --danger-soft: #f7e6e4;
+  --amber-texto: #92400e;
+  --amber-soft: #fef3c7;
   --radius: 6px;
   --radius-sm: 4px;
   --shadow: 0 1px 2px rgba(14, 23, 51, 0.06), 0 8px 24px -12px rgba(14, 23, 51, 0.18);
@@ -182,9 +184,22 @@ a { color: inherit; }
   white-space: nowrap;
 }
 
-.tag.live { background: var(--live-soft); color: var(--live); }
-.tag.soon { background: var(--accent-soft); color: var(--verde-texto); }
+.tag.live {
+  background: var(--live-soft);
+  color: var(--live);
+  animation: tag-pulse 1.6s ease-in-out infinite;
+}
+.tag.soon { background: var(--amber-soft); color: var(--amber-texto); }
 .tag.done { background: var(--line); color: var(--ink-faint); }
+
+@keyframes tag-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tag.live { animation: none; }
+}
 
 .btn {
   appearance: none;

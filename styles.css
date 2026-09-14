@@ -30,23 +30,9 @@
   --shadow: 0 1px 2px rgba(14, 23, 51, 0.06), 0 8px 24px -12px rgba(14, 23, 51, 0.18);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --ink: #eef1f7;
-    --ink-soft: #c3c9d6;
-    --ink-faint: #8891a3;
-    --bg: var(--navy-profundo);
-    --surface: var(--navy);
-    --line: #2c3d70;
-    --accent-soft: rgba(77, 200, 47, 0.16);
-    --live: var(--verde);
-    --live-soft: rgba(77, 200, 47, 0.14);
-    --danger: #e2897c;
-    --danger-soft: rgba(179, 72, 63, 0.18);
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 28px -12px rgba(0, 0, 0, 0.55);
-  }
-}
-
+/* pesquisa.abvcap.com.br não tem modo escuro — este site também não deve
+   mudar de aparência sozinho com o tema do sistema. O telão usa
+   data-theme="dark" explicitamente (tela de projeção), não isto. */
 :root[data-theme="dark"] {
   --ink: #eef1f7;
   --ink-soft: #c3c9d6;
@@ -64,7 +50,8 @@
 
 * { box-sizing: border-box; }
 
-html { color-scheme: light dark; }
+html { color-scheme: light; }
+html[data-theme="dark"] { color-scheme: dark; }
 
 body {
   margin: 0;

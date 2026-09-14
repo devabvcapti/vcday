@@ -3,6 +3,10 @@ const SUPABASE_ANON_KEY = "sb_publishable_DVhc89tNRiL1b20VJlMioQ_t0A47vAa";
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// Identifica a edicao do evento para as avaliacoes, permitindo reaproveitar
+// vcday_evaluations em futuros eventos sem misturar os resultados.
+const EVENT_SLUG = "vcday-2026";
+
 const TZ = "America/Sao_Paulo";
 
 function nowInSaoPaulo() {

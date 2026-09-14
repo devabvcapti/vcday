@@ -40,6 +40,25 @@
     #login-card { max-width: 360px; margin: 15vh auto 0; padding: 26px; text-align: center; }
     #login-card p { color: var(--ink-soft); font-size: 14px; margin: 8px 0 18px; }
     #login-error { color: var(--danger); font-size: 13px; margin-top: 10px; min-height: 18px; }
+
+    .view-switch { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid var(--line); }
+    .view-tab {
+      appearance: none; border: none; background: none; cursor: pointer;
+      font-family: inherit; font-size: 14px; font-weight: 600; color: var(--ink-faint);
+      padding: 10px 4px; margin-right: 16px; border-bottom: 2px solid transparent;
+    }
+    .view-tab.active { color: var(--navy); border-bottom-color: var(--verde); }
+
+    .eval-summary-grid { display: flex; gap: 32px; flex-wrap: wrap; }
+    .eval-stat .value { font-family: "Source Serif 4", Georgia, serif; font-size: 28px; color: var(--navy); }
+    .eval-stat .label { font-size: 12px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.05em; }
+
+    .erow { padding: 16px 18px; margin-bottom: 10px; }
+    .erow .erow-head { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+    .erow .rating { color: var(--verde-escuro); font-weight: 700; }
+    .erow .meta { font-size: 12px; color: var(--ink-faint); }
+    .erow .label { font-size: 12px; font-weight: 700; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 8px; }
+    .erow .text { font-size: 14px; line-height: 1.5; margin-top: 2px; }
   </style>
 </head>
 <body>
@@ -64,26 +83,40 @@
       <h1 id="panel-name" style="font-size: 24px;">Carregando…</h1>
       <p class="speakers" id="panel-speakers" style="display: none;"></p>
     </div>
-    <div class="tabs" id="panel-tabs"></div>
 
-    <div class="section-title">
-      <span>Pendentes <span id="count-pending" class="mono"></span></span>
+    <div class="view-switch">
+      <button type="button" class="view-tab active" id="switch-questions">Perguntas</button>
+      <button type="button" class="view-tab" id="switch-evaluations">Avaliações do evento</button>
     </div>
-    <div id="list-pending"></div>
 
-    <div class="section-title">
-      <span>Fila aprovada (aparece no telão)</span>
-    </div>
-    <div id="list-approved"></div>
+    <div id="questions-view">
+      <div class="tabs" id="panel-tabs"></div>
 
-    <div class="section-title">
-      <span>Histórico (respondidas / rejeitadas)</span>
+      <div class="section-title">
+        <span>Pendentes <span id="count-pending" class="mono"></span></span>
+      </div>
+      <div id="list-pending"></div>
+
+      <div class="section-title">
+        <span>Fila aprovada (aparece no telão)</span>
+      </div>
+      <div id="list-approved"></div>
+
+      <div class="section-title">
+        <span>Histórico (respondidas / rejeitadas)</span>
+      </div>
+      <div id="list-history"></div>
     </div>
-    <div id="list-history"></div>
+
+    <div id="evaluations-view" style="display: none;">
+      <div class="card" id="evaluations-summary" style="padding: 18px; margin-bottom: 18px;"></div>
+      <div class="section-title"><span>Comentários</span></div>
+      <div id="list-evaluations"></div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=6"></script>
+  <script src="app.js?v=7"></script>
   <script>
     (function () {
       let passcode = sessionStorage.getItem("vcday_mod_passcode") || "";
@@ -239,6 +272,62 @@
       }
 
       window.__setStatus = setStatus;
+
+      function starString(rating) {
+        return "★".repeat(rating) + "☆".repeat(5 - rating);
+      }
+
+      async function loadEvaluations() {
+        const { data, error } = await sb.rpc("vcday_admin_list_evaluations", {
+          p_passcode: passcode,
+          p_event_slug: EVENT_SLUG,
+        });
+        if (error) {
+          alert("Sessão expirou ou senha inválida. Recarregue a página.");
+          return;
+        }
+
+        const avg = data.length ? (data.reduce((sum, e) => sum + e.rating, 0) / data.length).toFixed(1) : "—";
+        document.getElementById("evaluations-summary").innerHTML = `
+          <div class="eval-summary-grid">
+            <div class="eval-stat"><div class="value">${avg}</div><div class="label">Nota média</div></div>
+            <div class="eval-stat"><div class="value">${data.length}</div><div class="label">Respostas</div></div>
+          </div>
+        `;
+
+        document.getElementById("list-evaluations").innerHTML = data.length
+          ? data
+              .map(
+                (e) => `
+                  <div class="card erow">
+                    <div class="erow-head">
+                      <span class="rating">${starString(e.rating)}</span>
+                      <span class="meta">${e.author_name ? escapeHtml(e.author_name) + " · " : "Anônimo · "}${timeAgo(e.created_at)}</span>
+                    </div>
+                    ${e.liked ? `<div class="label">Gostou</div><div class="text">${escapeHtml(e.liked)}</div>` : ""}
+                    ${e.improve ? `<div class="label">Sugestão de melhoria</div><div class="text">${escapeHtml(e.improve)}</div>` : ""}
+                  </div>
+                `
+              )
+              .join("")
+          : '<div class="empty-note">Nenhuma avaliação recebida ainda.</div>';
+      }
+
+      const switchQuestions = document.getElementById("switch-questions");
+      const switchEvaluations = document.getElementById("switch-evaluations");
+      switchQuestions.addEventListener("click", () => {
+        switchQuestions.classList.add("active");
+        switchEvaluations.classList.remove("active");
+        document.getElementById("questions-view").style.display = "block";
+        document.getElementById("evaluations-view").style.display = "none";
+      });
+      switchEvaluations.addEventListener("click", () => {
+        switchEvaluations.classList.add("active");
+        switchQuestions.classList.remove("active");
+        document.getElementById("questions-view").style.display = "none";
+        document.getElementById("evaluations-view").style.display = "block";
+        loadEvaluations();
+      });
 
       let poller = null;
       function startAdmin() {

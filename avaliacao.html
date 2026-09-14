@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Avaliar o evento · VC Day</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" />
+  <link rel="stylesheet" href="styles.css?v=7" />
+  <style>
+    .stars { display: flex; gap: 8px; }
+    .star {
+      appearance: none; border: none; background: none; cursor: pointer;
+      font-size: 34px; line-height: 1; padding: 2px; color: var(--line);
+      transition: color 0.1s ease, transform 0.06s ease;
+    }
+    .star:hover { transform: scale(1.08); }
+    .star.selected { color: var(--verde); }
+    .rating-hint { font-size: 13px; color: var(--ink-faint); margin-top: 6px; min-height: 18px; }
+  </style>
+</head>
+<body>
+  <div class="site-topbar"><div class="site-topbar-inner"><img src="assets/logo-negativo.png" alt="ABVCAP" class="brand-logo" /></div></div>
+  <div class="site-topbar-stripe"></div>
+  <div class="wrap">
+    <div class="header">
+      <span class="eyebrow">VC Day · 16 de setembro</span>
+      <h1>Avalie o evento</h1>
+      <p>Sua opinião ajuda a ABVCAP a melhorar as próximas edições do VC Day.</p>
+    </div>
+
+    <div class="card" style="padding: 22px;" id="form-card">
+      <form id="evaluation-form">
+        <div class="field">
+          <label>Nota geral para o evento</label>
+          <div class="stars" id="stars">
+            <button type="button" class="star" data-value="1">★</button>
+            <button type="button" class="star" data-value="2">★</button>
+            <button type="button" class="star" data-value="3">★</button>
+            <button type="button" class="star" data-value="4">★</button>
+            <button type="button" class="star" data-value="5">★</button>
+          </div>
+          <div class="rating-hint" id="rating-hint">Toque em uma estrela para avaliar</div>
+        </div>
+        <div class="field">
+          <label for="liked">O que você mais gostou? <span style="font-weight: 400; text-transform: none; letter-spacing: normal;">(opcional)</span></label>
+          <textarea id="liked" rows="3" maxlength="500" placeholder="Painéis, organização, networking…"></textarea>
+        </div>
+        <div class="field">
+          <label for="improve">O que podemos melhorar? <span style="font-weight: 400; text-transform: none; letter-spacing: normal;">(opcional)</span></label>
+          <textarea id="improve" rows="3" maxlength="500" placeholder="Sugestões para a próxima edição…"></textarea>
+        </div>
+        <div class="field">
+          <label for="author">Seu nome <span style="font-weight: 400; text-transform: none; letter-spacing: normal;">(opcional)</span></label>
+          <input type="text" id="author" maxlength="120" placeholder="Ex.: Maria Silva" />
+        </div>
+        <input type="text" id="website" name="website" class="honeypot" tabindex="-1" autocomplete="off" />
+        <button type="submit" class="btn btn-accent btn-block" id="submit-btn">Enviar avaliação</button>
+      </form>
+      <div id="success" style="display:none; text-align:center; padding: 12px 0;">
+        <h3 style="margin-bottom: 8px;">Obrigado pela avaliação!</h3>
+        <p style="color: var(--ink-soft); margin: 0;">Sua opinião foi registrada e vai ajudar a melhorar o próximo VC Day.</p>
+      </div>
+    </div>
+
+    <a class="btn btn-ghost btn-block" href="index.html" style="display: block; margin-top: 16px; text-align: center; text-decoration: none;">← Ver todos os painéis</a>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js?v=7"></script>
+  <script>
+    (function () {
+      let rating = 0;
+      const starsEl = document.getElementById("stars");
+      const hintEl = document.getElementById("rating-hint");
+      const stars = Array.from(starsEl.querySelectorAll(".star"));
+
+      function paintStars(value) {
+        stars.forEach((s) => s.classList.toggle("selected", Number(s.dataset.value) <= value));
+      }
+
+      stars.forEach((s) => {
+        s.addEventListener("click", () => {
+          rating = Number(s.dataset.value);
+          paintStars(rating);
+          hintEl.textContent = `Nota ${rating}/5`;
+        });
+        s.addEventListener("mouseenter", () => paintStars(Number(s.dataset.value)));
+      });
+      starsEl.addEventListener("mouseleave", () => paintStars(rating));
+
+      const form = document.getElementById("evaluation-form");
+      const submitBtn = document.getElementById("submit-btn");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const website = document.getElementById("website").value;
+        if (website) return; // honeypot tripped, silently ignore
+
+        if (!rating) {
+          hintEl.textContent = "Escolha uma nota antes de enviar";
+          hintEl.style.color = "var(--danger)";
+          return;
+        }
+
+        const liked = document.getElementById("liked").value.trim();
+        const improve = document.getElementById("improve").value.trim();
+        const author = document.getElementById("author").value.trim();
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Enviando…";
+
+        const { error } = await sb.from("vcday_evaluations").insert({
+          event_slug: EVENT_SLUG,
+          rating,
+          liked: liked || null,
+          improve: improve || null,
+          author_name: author || null,
+        });
+
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Enviar avaliação";
+
+        if (error) {
+          console.error(error);
+          alert("Não foi possível enviar. Tente novamente.");
+          return;
+        }
+
+        form.style.display = "none";
+        document.getElementById("success").style.display = "block";
+      });
+    })();
+  </script>
+</body>
+</html>

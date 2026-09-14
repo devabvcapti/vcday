@@ -42,7 +42,7 @@
         .map((p) => {
           const phase = panelPhase(p, nowMin);
           const tag =
-            phase === "live" ? '<span class="tag live">Ao vivo</span>' :
+            phase === "live" ? '<span class="tag live">Agora</span>' :
             phase === "soon" ? '<span class="tag soon">Em breve</span>' :
             '<span class="tag done">Encerrado</span>';
           const liveClass = phase === "live" ? " is-live" : "";

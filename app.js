@@ -47,7 +47,7 @@ async function fetchPanel(id) {
 // Paineis costumam atrasar (~20min em media) em relacao ao horario previsto.
 // So marcamos como "encerrado" depois dessa margem, para nao bloquear
 // perguntas de um painel que ainda esta rolando.
-const PANEL_GRACE_MINUTES = 20;
+const PANEL_GRACE_MINUTES = 15;
 
 function panelPhase(panel, nowMin) {
   const start = timeToMinutes(panel.starts_at);

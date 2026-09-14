@@ -6,7 +6,7 @@
   <title>Moderação · VC Day</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" />
-  <link rel="stylesheet" href="styles.css?v=7" />
+  <link rel="stylesheet" href="styles.css?v=8" />
   <style>
     .wrap-wide { max-width: 860px; margin-inline: auto; padding-block: 28px 64px; }
     .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
@@ -287,28 +287,51 @@
           return;
         }
 
-        const avg = data.length ? (data.reduce((sum, e) => sum + e.rating, 0) / data.length).toFixed(1) : "—";
+        function avgOf(list) {
+          return list.length ? (list.reduce((sum, e) => sum + e.rating, 0) / list.length).toFixed(1) : "—";
+        }
+
+        const general = data.filter((e) => !e.panel_id);
+        const tiles = [
+          { label: "Geral do evento", avg: avgOf(general), count: general.length },
+          ...panels.map((p) => {
+            const list = data.filter((e) => e.panel_id === p.id);
+            return { label: p.name.split(":")[0], avg: avgOf(list), count: list.length };
+          }),
+        ];
+
         document.getElementById("evaluations-summary").innerHTML = `
           <div class="eval-summary-grid">
-            <div class="eval-stat"><div class="value">${avg}</div><div class="label">Nota média</div></div>
-            <div class="eval-stat"><div class="value">${data.length}</div><div class="label">Respostas</div></div>
+            ${tiles
+              .map(
+                (t) => `
+                  <div class="eval-stat">
+                    <div class="value">${t.avg}</div>
+                    <div class="label">${escapeHtml(t.label)} ${t.count ? `(${t.count})` : ""}</div>
+                  </div>
+                `
+              )
+              .join("")}
           </div>
         `;
 
         document.getElementById("list-evaluations").innerHTML = data.length
           ? data
-              .map(
-                (e) => `
+              .map((e) => {
+                const panel = panels.find((p) => p.id === e.panel_id);
+                const context = panel ? `Painel: ${panel.name.split(":")[0]}` : "Avaliação geral do evento";
+                return `
                   <div class="card erow">
                     <div class="erow-head">
                       <span class="rating">${starString(e.rating)}</span>
                       <span class="meta">${e.author_name ? escapeHtml(e.author_name) + " · " : "Anônimo · "}${timeAgo(e.created_at)}</span>
                     </div>
+                    <div class="label">${escapeHtml(context)}</div>
                     ${e.liked ? `<div class="label">Gostou</div><div class="text">${escapeHtml(e.liked)}</div>` : ""}
                     ${e.improve ? `<div class="label">Sugestão de melhoria</div><div class="text">${escapeHtml(e.improve)}</div>` : ""}
                   </div>
-                `
-              )
+                `;
+              })
               .join("")
           : '<div class="empty-note">Nenhuma avaliação recebida ainda.</div>';
       }

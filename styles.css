@@ -154,10 +154,26 @@ a { color: inherit; }
 
 .panel-row.is-live { border-left-color: var(--verde); }
 
-.panel-row-disabled {
-  cursor: default;
-  opacity: 0.65;
+.panel-row-disabled { cursor: default; }
+.panel-row-disabled .time,
+.panel-row-disabled .title-block { opacity: 0.65; }
+
+.row-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
 }
+
+.evaluate-link {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--verde-texto);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.evaluate-link:hover { text-decoration: underline; }
 
 .panel-row .time {
   font-family: "IBM Plex Mono", monospace;

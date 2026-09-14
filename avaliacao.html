@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Avaliar o evento · VC Day</title>
+  <title>Avaliar · VC Day</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" />
-  <link rel="stylesheet" href="styles.css?v=7" />
+  <link rel="stylesheet" href="styles.css?v=8" />
   <style>
     .stars { display: flex; gap: 8px; }
     .star {
@@ -24,15 +24,16 @@
   <div class="site-topbar-stripe"></div>
   <div class="wrap">
     <div class="header">
-      <span class="eyebrow">VC Day · 16 de setembro</span>
-      <h1>Avalie o evento</h1>
-      <p>Sua opinião ajuda a ABVCAP a melhorar as próximas edições do VC Day.</p>
+      <span class="eyebrow" id="context-eyebrow">VC Day · 16 de setembro</span>
+      <h1 id="context-title">Avalie o evento</h1>
+      <p class="speakers" id="context-speakers" style="display: none;"></p>
+      <p id="context-subtitle">Sua opinião ajuda a ABVCAP a melhorar as próximas edições do VC Day.</p>
     </div>
 
     <div class="card" style="padding: 22px;" id="form-card">
       <form id="evaluation-form">
         <div class="field">
-          <label>Nota geral para o evento</label>
+          <label id="rating-label">Nota geral para o evento</label>
           <div class="stars" id="stars">
             <button type="button" class="star" data-value="1">★</button>
             <button type="button" class="star" data-value="2">★</button>
@@ -44,11 +45,11 @@
         </div>
         <div class="field">
           <label for="liked">O que você mais gostou? <span style="font-weight: 400; text-transform: none; letter-spacing: normal;">(opcional)</span></label>
-          <textarea id="liked" rows="3" maxlength="500" placeholder="Painéis, organização, networking…"></textarea>
+          <textarea id="liked" rows="3" maxlength="500" placeholder="Conteúdo, painelistas, organização…"></textarea>
         </div>
         <div class="field">
           <label for="improve">O que podemos melhorar? <span style="font-weight: 400; text-transform: none; letter-spacing: normal;">(opcional)</span></label>
-          <textarea id="improve" rows="3" maxlength="500" placeholder="Sugestões para a próxima edição…"></textarea>
+          <textarea id="improve" rows="3" maxlength="500" placeholder="Sugestões para a próxima vez…"></textarea>
         </div>
         <div class="field">
           <label for="author">Seu nome <span style="font-weight: 400; text-transform: none; letter-spacing: normal;">(opcional)</span></label>
@@ -58,8 +59,9 @@
         <button type="submit" class="btn btn-accent btn-block" id="submit-btn">Enviar avaliação</button>
       </form>
       <div id="success" style="display:none; text-align:center; padding: 12px 0;">
-        <h3 style="margin-bottom: 8px;">Obrigado pela avaliação!</h3>
-        <p style="color: var(--ink-soft); margin: 0;">Sua opinião foi registrada e vai ajudar a melhorar o próximo VC Day.</p>
+        <h3 style="margin-bottom: 8px;" id="success-title">Obrigado pela avaliação!</h3>
+        <p style="color: var(--ink-soft); margin: 0 0 18px;" id="success-text">Sua opinião foi registrada e vai ajudar a melhorar o próximo VC Day.</p>
+        <a class="btn btn-ghost btn-block" href="avaliacao.html" id="success-general-link" style="display:none; text-decoration: none;">Avaliar o evento inteiro →</a>
       </div>
     </div>
 
@@ -69,7 +71,37 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="app.js?v=7"></script>
   <script>
-    (function () {
+    (async function () {
+      const panelId = qs("p");
+      let panel = null;
+
+      if (panelId) {
+        panel = await fetchPanel(panelId);
+        const eyebrowEl = document.getElementById("context-eyebrow");
+        const titleEl = document.getElementById("context-title");
+        const subtitleEl = document.getElementById("context-subtitle");
+        const ratingLabelEl = document.getElementById("rating-label");
+
+        if (!panel) {
+          titleEl.textContent = "Painel não encontrado";
+          document.getElementById("form-card").style.display = "none";
+          return;
+        }
+
+        eyebrowEl.textContent = `VC Day · ${formatRange(panel)}`;
+        titleEl.textContent = panel.name;
+        if (panel.speakers) {
+          const speakersEl = document.getElementById("context-speakers");
+          speakersEl.textContent = `Speaker: ${panel.speakers}`;
+          speakersEl.style.display = "block";
+        }
+        subtitleEl.textContent = "Como foi este painel? Sua opinião ajuda a ABVCAP a melhorar os próximos.";
+        ratingLabelEl.textContent = "Nota para este painel";
+        document.getElementById("success-title").textContent = "Obrigado pela avaliação!";
+        document.getElementById("success-text").textContent = "Sua opinião sobre este painel foi registrada.";
+        document.getElementById("success-general-link").style.display = "block";
+      }
+
       let rating = 0;
       const starsEl = document.getElementById("stars");
       const hintEl = document.getElementById("rating-hint");
@@ -112,6 +144,7 @@
 
         const { error } = await sb.from("vcday_evaluations").insert({
           event_slug: EVENT_SLUG,
+          panel_id: panel ? panel.id : null,
           rating,
           liked: liked || null,
           improve: improve || null,

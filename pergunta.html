@@ -6,7 +6,7 @@
   <title>Enviar pergunta · VC Day</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" />
-  <link rel="stylesheet" href="styles.css?v=7" />
+  <link rel="stylesheet" href="styles.css?v=8" />
 </head>
 <body>
   <div class="site-topbar"><div class="site-topbar-inner"><img src="assets/logo-negativo.png" alt="ABVCAP" class="brand-logo" /></div></div>
@@ -36,6 +36,7 @@
         <h3 style="margin-bottom: 8px;">Pergunta enviada!</h3>
         <p style="color: var(--ink-soft); margin: 0 0 18px;">A pergunta foi enviada para a moderação do painel. Caso seja selecionada, será lida ao painelista.</p>
         <button class="btn btn-ghost btn-block" id="another-btn">Enviar outra pergunta</button>
+        <a class="evaluate-link" id="success-evaluate-link" href="#" style="display: block; margin-top: 14px;">Avaliar este painel →</a>
       </div>
     </div>
 
@@ -71,11 +72,14 @@
         speakersEl.textContent = `Speaker: ${panel.speakers}`;
         speakersEl.style.display = "block";
       }
+      document.getElementById("success-evaluate-link").href = `avaliacao.html?p=${encodeURIComponent(panel.id)}`;
 
       if (panelPhase(panel, nowMinutesSaoPaulo()) === "done") {
         timeEl.textContent = `VC Day · ${formatRange(panel)} · Encerrado`;
-        document.getElementById("form-card").innerHTML =
-          '<p style="margin: 0; color: var(--ink-soft);">Este painel já foi encerrado e não está mais recebendo perguntas.</p>';
+        document.getElementById("form-card").innerHTML = `
+          <p style="margin: 0 0 14px; color: var(--ink-soft);">Este painel já foi encerrado e não está mais recebendo perguntas.</p>
+          <a class="btn btn-accent btn-block" href="avaliacao.html?p=${encodeURIComponent(panel.id)}" style="display: block; text-align: center; text-decoration: none;">Avaliar este painel →</a>
+        `;
         return;
       }
 

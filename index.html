@@ -6,7 +6,7 @@
   <title>Perguntas · VC Day</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" />
-  <link rel="stylesheet" href="styles.css?v=6" />
+  <link rel="stylesheet" href="styles.css?v=7" />
 </head>
 <body>
   <div class="site-topbar"><div class="site-topbar-inner"><img src="assets/logo-negativo.png" alt="ABVCAP" class="brand-logo" /></div></div>
@@ -46,11 +46,17 @@
             phase === "soon" ? '<span class="tag soon">Em breve</span>' :
             '<span class="tag done">Encerrado</span>';
           const liveClass = phase === "live" ? " is-live" : "";
+          const titleBlock = `
+            <span class="title-block">
+              <span class="title">${escapeHtml(p.name)}</span>
+              ${p.speakers ? `<span class="speakers">Speaker: ${escapeHtml(p.speakers)}</span>` : ""}
+            </span>
+          `;
           if (phase === "done") {
             return `
               <div class="card panel-row panel-row-disabled">
                 <span class="time">${formatRange(p)}</span>
-                <span class="title">${escapeHtml(p.name)}</span>
+                ${titleBlock}
                 ${tag}
               </div>
             `;
@@ -58,7 +64,7 @@
           return `
             <a class="card panel-row${liveClass}" href="pergunta.html?p=${encodeURIComponent(p.id)}">
               <span class="time">${formatRange(p)}</span>
-              <span class="title">${escapeHtml(p.name)}</span>
+              ${titleBlock}
               ${tag}
             </a>
           `;

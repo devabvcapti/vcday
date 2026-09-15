@@ -7,10 +7,23 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // vcday_evaluations em futuros eventos sem misturar os resultados.
 const EVENT_SLUG = "vcday-2026";
 
+// Data do evento (America/Sao_Paulo, formato YYYY-MM-DD). Usada para os
+// paineis nao aparecerem como "Agora"/"Encerrado" em dias que nao sao o do
+// evento so porque o horario do relogio bate com a janela de algum painel.
+const EVENT_DATE = "2026-09-16";
+
 const TZ = "America/Sao_Paulo";
 
 function nowInSaoPaulo() {
   return new Date(new Date().toLocaleString("en-US", { timeZone: TZ }));
+}
+
+function todayDateStringSaoPaulo() {
+  const d = nowInSaoPaulo();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
 }
 
 function timeToMinutes(t) {
@@ -57,6 +70,10 @@ function panelPhase(panel, nowMin) {
   // Permite forcar um status manualmente (treinamento, demonstracao) sem
   // depender do horario real. Null/vazio = comportamento normal por horario.
   if (panel.status_override) return panel.status_override;
+
+  const today = todayDateStringSaoPaulo();
+  if (today < EVENT_DATE) return "soon";
+  if (today > EVENT_DATE) return "done";
 
   const start = timeToMinutes(panel.starts_at);
   const end = timeToMinutes(panel.ends_at) + PANEL_GRACE_MINUTES;

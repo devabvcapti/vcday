@@ -69,7 +69,7 @@
       timeEl.textContent = `VC Day · ${formatRange(panel)}`;
       if (panel.speakers) {
         const speakersEl = document.getElementById("panel-speakers");
-        speakersEl.textContent = `Speaker: ${panel.speakers}`;
+        speakersEl.textContent = `Speakers: ${panel.speakers}`;
         speakersEl.style.display = "block";
       }
       document.getElementById("success-evaluate-link").href = `avaliacao.html?p=${encodeURIComponent(panel.id)}`;

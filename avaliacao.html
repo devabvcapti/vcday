@@ -32,7 +32,7 @@
       <span class="eyebrow" id="context-eyebrow">Congresso ABVCAP 2026 · 22 e 23 de setembro</span>
       <h1 id="context-title">Avalie o evento</h1>
       <p class="speakers" id="context-speakers" style="display: none;"></p>
-      <p id="context-subtitle">Sua opinião ajuda a ABVCAP a melhorar as próximas edições do Congresso ABVCAP 2026.</p>
+      <p id="context-subtitle"></p>
     </div>
 
     <div class="card" style="padding: 22px;" id="form-card">
@@ -74,7 +74,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=16"></script>
+  <script src="app.js?v=17"></script>
   <script>
     (async function () {
       document.documentElement.lang = getLang() === "en" ? "en" : "pt-BR";
@@ -91,7 +91,8 @@
       document.getElementById("submit-btn").textContent = t("sendEvaluation");
       document.getElementById("success-general-link").textContent = t("evaluateWholeEvent");
       document.getElementById("back-link").textContent = t("footerHome");
-      document.getElementById("context-eyebrow").textContent = `Congresso ABVCAP 2026 · ${t("eventDates")}`;
+      document.getElementById("context-eyebrow").textContent = `${t("eventName")} · ${t("eventDates")}`;
+      document.title = `${document.title.split(" · ")[0]} · ${t("eventName")}`;
       document.getElementById("context-title").textContent = t("evaluateEventTitle");
       document.getElementById("context-subtitle").textContent = t("evaluateEventSubtitle");
       document.getElementById("rating-label").textContent = t("ratingForEvent");
@@ -115,7 +116,7 @@
           return;
         }
 
-        eyebrowEl.textContent = `Congresso ABVCAP 2026 · ${formatRange(panel)}`;
+        eyebrowEl.textContent = `${t("eventName")} · ${formatRange(panel)}`;
         titleEl.textContent = panelName(panel);
         if (panel.speakers) {
           const speakersEl = document.getElementById("context-speakers");

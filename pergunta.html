@@ -18,7 +18,7 @@
   <div class="site-topbar-stripe"></div>
   <div class="wrap">
     <div class="header">
-      <span class="eyebrow" id="panel-time">Congresso ABVCAP 2026</span>
+      <span class="eyebrow" id="panel-time">Carregando…</span>
       <h1 id="panel-name">Carregando painel…</h1>
       <p class="speakers" id="panel-speakers" style="display: none;"></p>
     </div>
@@ -49,7 +49,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=16"></script>
+  <script src="app.js?v=17"></script>
   <script>
     (async function () {
       document.documentElement.lang = getLang() === "en" ? "en" : "pt-BR";
@@ -65,6 +65,8 @@
       document.getElementById("another-btn").textContent = t("sendAnother");
       document.getElementById("success-evaluate-link").textContent = t("evaluateThisPanel");
       document.getElementById("back-link").textContent = t("footerHome");
+      document.getElementById("panel-time").textContent = t("eventName");
+      document.title = `${document.title.split(" · ")[0]} · ${t("eventName")}`;
 
       const panelId = qs("p");
       const nameEl = document.getElementById("panel-name");
@@ -85,7 +87,7 @@
       }
 
       nameEl.textContent = panelName(panel);
-      timeEl.textContent = `Congresso ABVCAP 2026 · ${formatRange(panel)}`;
+      timeEl.textContent = `${t("eventName")} · ${formatRange(panel)}`;
       if (panel.speakers) {
         const speakersEl = document.getElementById("panel-speakers");
         speakersEl.textContent = `${t("speakersLabel")}: ${formatSpeakers(panel)}`;
@@ -94,7 +96,7 @@
       document.getElementById("success-evaluate-link").href = `avaliacao.html?p=${encodeURIComponent(panel.id)}`;
 
       if (panelPhase(panel, nowMinutesSaoPaulo()) === "done") {
-        timeEl.textContent = `Congresso ABVCAP 2026 · ${formatRange(panel)} ${t("closedSuffix")}`;
+        timeEl.textContent = `${t("eventName")} · ${formatRange(panel)} ${t("closedSuffix")}`;
         document.getElementById("form-card").innerHTML = `
           <p style="margin: 0 0 14px; color: var(--ink-soft);">${t("panelClosedText")}</p>
           <a class="btn btn-accent btn-block" href="avaliacao.html?p=${encodeURIComponent(panel.id)}" style="display: block; text-align: center; text-decoration: none;">${t("evaluateThisPanel")}</a>

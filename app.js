@@ -170,6 +170,7 @@ function setLang(lang) {
 
 const I18N = {
   pt: {
+    eventName: "Congresso ABVCAP 2026",
     eventDates: "22 e 23 de setembro",
     hubTitle: "Pergunte aos painelistas",
     hubSubtitle: "Selecione o painel em andamento (ou o próximo) e envie sua pergunta. A equipe de moderação fará a seleção das perguntas que serão enviadas aos painelistas.",
@@ -227,6 +228,7 @@ const I18N = {
     sendEvaluation: "Enviar avaliação",
   },
   en: {
+    eventName: "ABVCAP Congress 2026",
     eventDates: "September 22–23",
     hubTitle: "Ask the panelists",
     hubSubtitle: "Select the panel that's happening now (or next) and send your question. The moderation team will select the questions sent to the panelists.",
@@ -264,8 +266,8 @@ const I18N = {
     noPanelsRegistered: "No panels registered",
     loading: "Loading…",
     evaluateEventTitle: "Rate the event",
-    evaluateEventSubtitle: "Your feedback helps ABVCAP improve future editions of Congresso ABVCAP 2026.",
-    evaluateEventSuccessText: "Your feedback was recorded and will help improve the next Congresso ABVCAP 2026.",
+    evaluateEventSubtitle: "Your feedback helps ABVCAP improve future editions of ABVCAP Congress 2026.",
+    evaluateEventSuccessText: "Your feedback was recorded and will help improve the next ABVCAP Congress 2026.",
     evaluatePanelSubtitle: "How was this panel? Your feedback helps ABVCAP improve future ones.",
     evaluatePanelSuccessText: "Your feedback on this panel was recorded.",
     thankYouEvaluation: "Thanks for your feedback!",

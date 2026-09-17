@@ -31,19 +31,21 @@
 
     <a class="btn btn-ghost btn-block" href="avaliacao.html" id="evaluate-event-link" style="display: block; margin-top: 20px; text-align: center; text-decoration: none;">Avaliar o evento →</a>
 
-    <a class="footer-link" href="https://www.abvcap.com.br" target="_blank" rel="noopener">Congresso ABVCAP 2026</a>
+    <a class="footer-link" href="https://www.abvcap.com.br" target="_blank" rel="noopener" id="footer-link">Congresso ABVCAP 2026</a>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=16"></script>
+  <script src="app.js?v=17"></script>
   <script>
     (async function () {
       document.documentElement.lang = getLang() === "en" ? "en" : "pt-BR";
       renderLangToggle();
-      document.getElementById("hub-eyebrow").textContent = `Congresso ABVCAP 2026 · ${t("eventDates")}`;
+      document.getElementById("hub-eyebrow").textContent = `${t("eventName")} · ${t("eventDates")}`;
       document.getElementById("hub-title").textContent = t("hubTitle");
       document.getElementById("hub-subtitle").textContent = t("hubSubtitle");
       document.getElementById("evaluate-event-link").textContent = t("evaluateEvent");
+      document.getElementById("footer-link").textContent = t("eventName");
+      document.title = `${document.title.split(" · ")[0]} · ${t("eventName")}`;
 
       const panels = await fetchPanels();
       const nowMin = nowMinutesSaoPaulo();

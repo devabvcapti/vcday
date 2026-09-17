@@ -111,12 +111,13 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=16"></script>
+  <script src="app.js?v=17"></script>
   <script>
     (function () {
       document.documentElement.lang = getLang() === "en" ? "en" : "pt-BR";
       renderLangToggle();
-      document.getElementById("eyebrow-text").textContent = `Congresso ABVCAP 2026 · ${t("liveQuestionsEyebrow")}`;
+      document.getElementById("eyebrow-text").textContent = `${t("eventName")} · ${t("liveQuestionsEyebrow")}`;
+      document.title = `${document.title.split(" · ")[0]} · ${t("eventName")}`;
       document.getElementById("cta-text").textContent = t("sendYourQuestionAt");
       document.getElementById("empty-state").textContent = t("waitingApproved");
       document.getElementById("panel-name").textContent = t("loading");

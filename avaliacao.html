@@ -6,7 +6,7 @@
   <title>Avaliar · Congresso ABVCAP 2026</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" />
-  <link rel="stylesheet" href="styles.css?v=10" />
+  <link rel="stylesheet" href="styles.css?v=11" />
   <style>
     .stars { display: flex; gap: 8px; }
     .star {
@@ -20,7 +20,12 @@
   </style>
 </head>
 <body>
-  <div class="site-topbar"><div class="site-topbar-inner"><img src="assets/logo-negativo.png" alt="ABVCAP" class="brand-logo" /></div></div>
+  <div class="site-topbar">
+    <div class="site-topbar-inner">
+      <img src="assets/logo-negativo.png" alt="ABVCAP" class="brand-logo" />
+      <div class="lang-toggle" id="lang-toggle"></div>
+    </div>
+  </div>
   <div class="site-topbar-stripe"></div>
   <div class="wrap">
     <div class="header">
@@ -44,15 +49,15 @@
           <div class="rating-hint" id="rating-hint">Toque em uma estrela para avaliar</div>
         </div>
         <div class="field">
-          <label for="liked">O que você mais gostou? <span style="font-weight: 400; text-transform: none; letter-spacing: normal;">(opcional)</span></label>
+          <label for="liked"><span id="liked-label">O que você mais gostou?</span> <span id="liked-optional" style="font-weight: 400; text-transform: none; letter-spacing: normal;">(opcional)</span></label>
           <textarea id="liked" rows="3" maxlength="500" placeholder="Conteúdo, painelistas, organização…"></textarea>
         </div>
         <div class="field">
-          <label for="improve">O que podemos melhorar? <span style="font-weight: 400; text-transform: none; letter-spacing: normal;">(opcional)</span></label>
+          <label for="improve"><span id="improve-label">O que podemos melhorar?</span> <span id="improve-optional" style="font-weight: 400; text-transform: none; letter-spacing: normal;">(opcional)</span></label>
           <textarea id="improve" rows="3" maxlength="500" placeholder="Sugestões para a próxima vez…"></textarea>
         </div>
         <div class="field">
-          <label for="author">Seu nome <span style="font-weight: 400; text-transform: none; letter-spacing: normal;">(opcional)</span></label>
+          <label for="author"><span id="author-label">Seu nome</span> <span id="author-optional" style="font-weight: 400; text-transform: none; letter-spacing: normal;">(opcional)</span></label>
           <input type="text" id="author" maxlength="120" placeholder="Ex.: Maria Silva" />
         </div>
         <input type="text" id="website" name="website" class="honeypot" tabindex="-1" autocomplete="off" />
@@ -65,13 +70,34 @@
       </div>
     </div>
 
-    <a class="btn btn-ghost btn-block" href="index.html" style="display: block; margin-top: 16px; text-align: center; text-decoration: none;">← Ver todos os painéis</a>
+    <a class="btn btn-ghost btn-block" href="index.html" id="back-link" style="display: block; margin-top: 16px; text-align: center; text-decoration: none;">← Ver todos os painéis</a>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=13"></script>
+  <script src="app.js?v=14"></script>
   <script>
     (async function () {
+      document.documentElement.lang = getLang() === "en" ? "en" : "pt-BR";
+      renderLangToggle();
+      document.getElementById("liked-label").textContent = t("likedQuestion");
+      document.getElementById("liked-optional").textContent = t("optional");
+      document.getElementById("liked").placeholder = t("likedPlaceholder");
+      document.getElementById("improve-label").textContent = t("improveQuestion");
+      document.getElementById("improve-optional").textContent = t("optional");
+      document.getElementById("improve").placeholder = t("improvePlaceholder");
+      document.getElementById("author-label").textContent = t("yourName");
+      document.getElementById("author-optional").textContent = t("optional");
+      document.getElementById("author").placeholder = t("yourNamePlaceholder");
+      document.getElementById("submit-btn").textContent = t("sendEvaluation");
+      document.getElementById("success-general-link").textContent = t("evaluateWholeEvent");
+      document.getElementById("back-link").textContent = t("footerHome");
+      document.getElementById("context-title").textContent = t("evaluateEventTitle");
+      document.getElementById("context-subtitle").textContent = t("evaluateEventSubtitle");
+      document.getElementById("rating-label").textContent = t("ratingForEvent");
+      document.getElementById("rating-hint").textContent = t("tapAStar");
+      document.getElementById("success-title").textContent = t("thankYouEvaluation");
+      document.getElementById("success-text").textContent = t("evaluateEventSuccessText");
+
       const panelId = qs("p");
       let panel = null;
 
@@ -83,22 +109,22 @@
         const ratingLabelEl = document.getElementById("rating-label");
 
         if (!panel) {
-          titleEl.textContent = "Painel não encontrado";
+          titleEl.textContent = t("panelNotFound");
           document.getElementById("form-card").style.display = "none";
           return;
         }
 
         eyebrowEl.textContent = `Congresso ABVCAP 2026 · ${formatRange(panel)}`;
-        titleEl.textContent = panel.name;
+        titleEl.textContent = panelName(panel);
         if (panel.speakers) {
           const speakersEl = document.getElementById("context-speakers");
-          speakersEl.textContent = `Speakers: ${panel.speakers}`;
+          speakersEl.textContent = `${t("speakersLabel")}: ${panel.speakers}`;
           speakersEl.style.display = "block";
         }
-        subtitleEl.textContent = "Como foi este painel? Sua opinião ajuda a ABVCAP a melhorar os próximos.";
-        ratingLabelEl.textContent = "Nota para este painel";
-        document.getElementById("success-title").textContent = "Obrigado pela avaliação!";
-        document.getElementById("success-text").textContent = "Sua opinião sobre este painel foi registrada.";
+        subtitleEl.textContent = t("evaluatePanelSubtitle");
+        ratingLabelEl.textContent = t("ratingForPanel");
+        document.getElementById("success-title").textContent = t("thankYouEvaluation");
+        document.getElementById("success-text").textContent = t("evaluatePanelSuccessText");
         document.getElementById("success-general-link").style.display = "block";
       }
 
@@ -115,7 +141,7 @@
         s.addEventListener("click", () => {
           rating = Number(s.dataset.value);
           paintStars(rating);
-          hintEl.textContent = `Nota ${rating}/5`;
+          hintEl.textContent = `${t("ratingN")} ${rating}/5`;
         });
         s.addEventListener("mouseenter", () => paintStars(Number(s.dataset.value)));
       });
@@ -130,7 +156,7 @@
         if (website) return; // honeypot tripped, silently ignore
 
         if (!rating) {
-          hintEl.textContent = "Escolha uma nota antes de enviar";
+          hintEl.textContent = t("pickRatingFirst");
           hintEl.style.color = "var(--danger)";
           return;
         }
@@ -140,7 +166,7 @@
         const author = document.getElementById("author").value.trim();
 
         submitBtn.disabled = true;
-        submitBtn.textContent = "Enviando…";
+        submitBtn.textContent = t("sending");
 
         const { error } = await sb.from("vcday_evaluations").insert({
           event_slug: EVENT_SLUG,
@@ -152,11 +178,11 @@
         });
 
         submitBtn.disabled = false;
-        submitBtn.textContent = "Enviar avaliação";
+        submitBtn.textContent = t("sendEvaluation");
 
         if (error) {
           console.error(error);
-          alert("Não foi possível enviar. Tente novamente.");
+          alert(t("sendError"));
           return;
         }
 

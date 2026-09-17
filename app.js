@@ -142,3 +142,156 @@ function pickDefaultPanel(panels) {
   if (upcoming) return upcoming;
   return panels[panels.length - 1];
 }
+
+// --- Bilingue (PT/EN) -------------------------------------------------
+// Escopo: paginas voltadas ao publico (hub, pergunta, telao, avaliacao).
+// A moderacao fica so em portugues por enquanto (uso interno da equipe).
+// Idioma persiste por navegador (localStorage); trocar recarrega a pagina
+// para evitar estados parcialmente traduzidos.
+
+function getLang() {
+  return localStorage.getItem("vcday_lang") === "en" ? "en" : "pt";
+}
+
+function setLang(lang) {
+  localStorage.setItem("vcday_lang", lang);
+  location.reload();
+}
+
+const I18N = {
+  pt: {
+    hubTitle: "Pergunte aos painelistas",
+    hubSubtitle: "Selecione o painel em andamento (ou o próximo) e envie sua pergunta. A equipe de moderação fará a seleção das perguntas que serão enviadas aos painelistas.",
+    loadingPanels: "Carregando painéis…",
+    noPanelsYet: "Nenhum painel cadastrado ainda.",
+    day: "Dia",
+    tagLive: "Agora",
+    tagSoon: "Em breve",
+    tagDone: "Encerrado",
+    evaluateShort: "Avaliar →",
+    evaluateEvent: "Avaliar o evento →",
+    speakersLabel: "Speakers",
+    footerHome: "← Ver todos os painéis",
+    loadingPanel: "Carregando painel…",
+    panelNotProvided: "Painel não informado",
+    scanQr: "Escaneie o QR code exibido na tela do painel",
+    panelNotFound: "Painel não encontrado",
+    yourQuestion: "Sua pergunta",
+    questionPlaceholder: "Escreva sua pergunta para o painelista…",
+    yourNameCompany: "Seu nome e empresa",
+    optional: "(opcional)",
+    namePlaceholder: "Ex.: Maria Silva, Fundo XP",
+    sendQuestion: "Enviar pergunta",
+    sending: "Enviando…",
+    questionSentTitle: "Pergunta enviada!",
+    questionSentText: "A pergunta foi enviada para a moderação do painel. Caso seja selecionada, será lida ao painelista.",
+    sendAnother: "Enviar outra pergunta",
+    evaluateThisPanel: "Avaliar este painel →",
+    panelClosedText: "Este painel já foi encerrado e não está mais recebendo perguntas.",
+    closedSuffix: "· Encerrado",
+    sendError: "Não foi possível enviar. Tente novamente.",
+    liveQuestionsEyebrow: "Perguntas ao vivo",
+    sendYourQuestionAt: "Envie sua pergunta em",
+    waitingApproved: "Aguardando perguntas aprovadas…",
+    noPanelsRegistered: "Nenhum painel cadastrado",
+    loading: "Carregando…",
+    evaluateEventTitle: "Avalie o evento",
+    evaluateEventSubtitle: "Sua opinião ajuda a ABVCAP a melhorar as próximas edições do Congresso ABVCAP 2026.",
+    evaluateEventSuccessText: "Sua opinião foi registrada e vai ajudar a melhorar o próximo Congresso ABVCAP 2026.",
+    evaluatePanelSubtitle: "Como foi este painel? Sua opinião ajuda a ABVCAP a melhorar os próximos.",
+    evaluatePanelSuccessText: "Sua opinião sobre este painel foi registrada.",
+    thankYouEvaluation: "Obrigado pela avaliação!",
+    evaluateWholeEvent: "Avaliar o evento inteiro →",
+    ratingForEvent: "Nota geral para o evento",
+    ratingForPanel: "Nota para este painel",
+    tapAStar: "Toque em uma estrela para avaliar",
+    ratingN: "Nota",
+    pickRatingFirst: "Escolha uma nota antes de enviar",
+    likedQuestion: "O que você mais gostou?",
+    likedPlaceholder: "Conteúdo, painelistas, organização…",
+    improveQuestion: "O que podemos melhorar?",
+    improvePlaceholder: "Sugestões para a próxima vez…",
+    yourName: "Seu nome",
+    yourNamePlaceholder: "Ex.: Maria Silva",
+    sendEvaluation: "Enviar avaliação",
+  },
+  en: {
+    hubTitle: "Ask the panelists",
+    hubSubtitle: "Select the panel that's happening now (or next) and send your question. The moderation team will select the questions sent to the panelists.",
+    loadingPanels: "Loading panels…",
+    noPanelsYet: "No panels registered yet.",
+    day: "Day",
+    tagLive: "Now",
+    tagSoon: "Soon",
+    tagDone: "Closed",
+    evaluateShort: "Rate →",
+    evaluateEvent: "Rate the event →",
+    speakersLabel: "Speakers",
+    footerHome: "← See all panels",
+    loadingPanel: "Loading panel…",
+    panelNotProvided: "Panel not specified",
+    scanQr: "Scan the QR code shown on the panel screen",
+    panelNotFound: "Panel not found",
+    yourQuestion: "Your question",
+    questionPlaceholder: "Write your question for the panelist…",
+    yourNameCompany: "Your name and company",
+    optional: "(optional)",
+    namePlaceholder: "E.g.: Maria Silva, Fundo XP",
+    sendQuestion: "Send question",
+    sending: "Sending…",
+    questionSentTitle: "Question sent!",
+    questionSentText: "Your question was sent to the panel's moderation. If selected, it will be read to the panelist.",
+    sendAnother: "Send another question",
+    evaluateThisPanel: "Rate this panel →",
+    panelClosedText: "This panel has already ended and is no longer accepting questions.",
+    closedSuffix: "· Closed",
+    sendError: "Could not send. Please try again.",
+    liveQuestionsEyebrow: "Live Q&A",
+    sendYourQuestionAt: "Send your question at",
+    waitingApproved: "Waiting for approved questions…",
+    noPanelsRegistered: "No panels registered",
+    loading: "Loading…",
+    evaluateEventTitle: "Rate the event",
+    evaluateEventSubtitle: "Your feedback helps ABVCAP improve future editions of Congresso ABVCAP 2026.",
+    evaluateEventSuccessText: "Your feedback was recorded and will help improve the next Congresso ABVCAP 2026.",
+    evaluatePanelSubtitle: "How was this panel? Your feedback helps ABVCAP improve future ones.",
+    evaluatePanelSuccessText: "Your feedback on this panel was recorded.",
+    thankYouEvaluation: "Thanks for your feedback!",
+    evaluateWholeEvent: "Rate the whole event →",
+    ratingForEvent: "Overall rating for the event",
+    ratingForPanel: "Rating for this panel",
+    tapAStar: "Tap a star to rate",
+    ratingN: "Rating",
+    pickRatingFirst: "Choose a rating before sending",
+    likedQuestion: "What did you like most?",
+    likedPlaceholder: "Content, panelists, organization…",
+    improveQuestion: "What can we improve?",
+    improvePlaceholder: "Suggestions for next time…",
+    yourName: "Your name",
+    yourNamePlaceholder: "E.g.: Maria Silva",
+    sendEvaluation: "Send rating",
+  },
+};
+
+function t(key) {
+  const lang = getLang();
+  return (I18N[lang] && I18N[lang][key]) || I18N.pt[key] || key;
+}
+
+/** Nome do painel no idioma atual, com fallback para o portugues se nao houver traducao. */
+function panelName(panel) {
+  return getLang() === "en" && panel.name_en ? panel.name_en : panel.name;
+}
+
+function renderLangToggle() {
+  const el = document.getElementById("lang-toggle");
+  if (!el) return;
+  const lang = getLang();
+  el.innerHTML = `
+    <button type="button" class="lang-flag${lang === "pt" ? " active" : ""}" data-lang="pt" aria-label="Português" title="Português">🇧🇷</button>
+    <button type="button" class="lang-flag${lang === "en" ? " active" : ""}" data-lang="en" aria-label="English" title="English">🇺🇸</button>
+  `;
+  el.querySelectorAll(".lang-flag").forEach((btn) => {
+    btn.addEventListener("click", () => setLang(btn.dataset.lang));
+  });
+}

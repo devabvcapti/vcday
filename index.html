@@ -6,16 +6,21 @@
   <title>Perguntas · Congresso ABVCAP 2026</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" />
-  <link rel="stylesheet" href="styles.css?v=10" />
+  <link rel="stylesheet" href="styles.css?v=11" />
 </head>
 <body>
-  <div class="site-topbar"><div class="site-topbar-inner"><img src="assets/logo-negativo.png" alt="ABVCAP" class="brand-logo" /></div></div>
+  <div class="site-topbar">
+    <div class="site-topbar-inner">
+      <img src="assets/logo-negativo.png" alt="ABVCAP" class="brand-logo" />
+      <div class="lang-toggle" id="lang-toggle"></div>
+    </div>
+  </div>
   <div class="site-topbar-stripe"></div>
   <div class="wrap">
     <div class="header">
       <span class="eyebrow">Congresso ABVCAP 2026 · 22 e 23 de setembro</span>
-      <h1>Pergunte aos painelistas</h1>
-      <p>Selecione o painel em andamento (ou o próximo) e envie sua pergunta. A equipe de moderação fará a seleção das perguntas que serão enviadas aos painelistas.</p>
+      <h1 id="hub-title">Pergunte aos painelistas</h1>
+      <p id="hub-subtitle">Selecione o painel em andamento (ou o próximo) e envie sua pergunta. A equipe de moderação fará a seleção das perguntas que serão enviadas aos painelistas.</p>
     </div>
 
     <div class="day-tabs" id="day-tabs"></div>
@@ -24,22 +29,28 @@
       <div class="card" style="padding: 18px; color: var(--ink-faint);">Carregando painéis…</div>
     </div>
 
-    <a class="btn btn-ghost btn-block" href="avaliacao.html" style="display: block; margin-top: 20px; text-align: center; text-decoration: none;">Avaliar o evento →</a>
+    <a class="btn btn-ghost btn-block" href="avaliacao.html" id="evaluate-event-link" style="display: block; margin-top: 20px; text-align: center; text-decoration: none;">Avaliar o evento →</a>
 
     <a class="footer-link" href="https://www.abvcap.com.br" target="_blank" rel="noopener">Congresso ABVCAP 2026</a>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=13"></script>
+  <script src="app.js?v=14"></script>
   <script>
     (async function () {
+      document.documentElement.lang = getLang() === "en" ? "en" : "pt-BR";
+      renderLangToggle();
+      document.getElementById("hub-title").textContent = t("hubTitle");
+      document.getElementById("hub-subtitle").textContent = t("hubSubtitle");
+      document.getElementById("evaluate-event-link").textContent = t("evaluateEvent");
+
       const panels = await fetchPanels();
       const nowMin = nowMinutesSaoPaulo();
       const list = document.getElementById("panels");
       const dayTabsEl = document.getElementById("day-tabs");
 
       if (!panels.length) {
-        list.innerHTML = '<div class="card" style="padding:18px;color:var(--ink-faint);">Nenhum painel cadastrado ainda.</div>';
+        list.innerHTML = `<div class="card" style="padding:18px;color:var(--ink-faint);">${t("noPanelsYet")}</div>`;
         return;
       }
 
@@ -52,7 +63,7 @@
         dayTabsEl.innerHTML = days
           .map((d, i) => {
             const [, m, dd] = d.split("-");
-            return `<button type="button" class="day-tab${d === selectedDay ? " active" : ""}" data-day="${d}">Dia ${i + 1} · ${dd}/${m}</button>`;
+            return `<button type="button" class="day-tab${d === selectedDay ? " active" : ""}" data-day="${d}">${t("day")} ${i + 1} · ${dd}/${m}</button>`;
           })
           .join("");
         dayTabsEl.querySelectorAll(".day-tab").forEach((btn) => {
@@ -70,14 +81,14 @@
         .map((p) => {
           const phase = panelPhase(p, nowMin);
           const tag =
-            phase === "live" ? '<span class="tag live">Agora</span>' :
-            phase === "soon" ? '<span class="tag soon">Em breve</span>' :
-            '<span class="tag done">Encerrado</span>';
+            phase === "live" ? `<span class="tag live">${t("tagLive")}</span>` :
+            phase === "soon" ? `<span class="tag soon">${t("tagSoon")}</span>` :
+            `<span class="tag done">${t("tagDone")}</span>`;
           const liveClass = phase === "live" ? " is-live" : "";
           const titleBlock = `
             <span class="title-block">
-              <span class="title">${escapeHtml(p.name)}</span>
-              ${p.speakers ? `<span class="speakers">Speakers: ${escapeHtml(p.speakers)}</span>` : ""}
+              <span class="title">${escapeHtml(panelName(p))}</span>
+              ${p.speakers ? `<span class="speakers">${t("speakersLabel")}: ${escapeHtml(p.speakers)}</span>` : ""}
             </span>
           `;
           if (phase === "done") {
@@ -87,7 +98,7 @@
                 ${titleBlock}
                 <span class="row-actions">
                   ${tag}
-                  <a class="evaluate-link" href="avaliacao.html?p=${encodeURIComponent(p.id)}">Avaliar →</a>
+                  <a class="evaluate-link" href="avaliacao.html?p=${encodeURIComponent(p.id)}">${t("evaluateShort")}</a>
                 </span>
               </div>
             `;

@@ -91,7 +91,23 @@ a { color: inherit; }
   padding: 14px 20px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
 }
+
+.lang-toggle { display: flex; gap: 6px; }
+.lang-flag {
+  appearance: none;
+  border: 1px solid transparent;
+  background: none;
+  font-size: 18px;
+  line-height: 1;
+  padding: 4px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  opacity: 0.5;
+  filter: grayscale(60%);
+}
+.lang-flag.active { opacity: 1; filter: none; border-color: rgba(255, 255, 255, 0.35); }
 
 .site-topbar .brand-logo {
   height: 24px;

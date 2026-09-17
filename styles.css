@@ -213,7 +213,7 @@ a { color: inherit; }
   font-size: 13px;
   color: var(--ink-soft);
   white-space: nowrap;
-  min-width: 128px;
+  min-width: 92px;
 }
 
 .panel-row .title-block {

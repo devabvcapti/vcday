@@ -116,6 +116,11 @@ function formatRange(panel) {
   return `${formatEventDate(panel)} · ${panel.starts_at.slice(0, 5)}–${panel.ends_at.slice(0, 5)}`;
 }
 
+/** So o horario, sem a data - usado onde a data ja fica clara pelo contexto (ex.: seletor de dia). */
+function formatTimeOnly(panel) {
+  return `${panel.starts_at.slice(0, 5)}–${panel.ends_at.slice(0, 5)}`;
+}
+
 /** Datas distintas (event_date) presentes numa lista de paineis, em ordem. */
 function uniqueEventDates(panels) {
   return [...new Set(panels.map((p) => p.event_date))].sort();

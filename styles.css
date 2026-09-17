@@ -180,7 +180,7 @@ a { color: inherit; }
   font-size: 13px;
   color: var(--ink-soft);
   white-space: nowrap;
-  min-width: 92px;
+  min-width: 128px;
 }
 
 .panel-row .title-block {

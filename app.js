@@ -4,13 +4,16 @@ const SUPABASE_ANON_KEY = "sb_publishable_DVhc89tNRiL1b20VJlMioQ_t0A47vAa";
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Identifica a edicao do evento para as avaliacoes, permitindo reaproveitar
-// vcday_evaluations em futuros eventos sem misturar os resultados.
+// vcday_evaluations em futuros eventos sem misturar os resultados. Trocar a
+// cada novo evento.
 const EVENT_SLUG = "vcday-2026";
 
-// Data do evento (America/Sao_Paulo, formato YYYY-MM-DD). Usada para os
-// paineis nao aparecerem como "Agora"/"Encerrado" em dias que nao sao o do
-// evento so porque o horario do relogio bate com a janela de algum painel.
-const EVENT_DATE = "2026-09-16";
+// Janela de datas (America/Sao_Paulo, YYYY-MM-DD) do evento atual. So os
+// paineis com event_date dentro dessa janela aparecem no hub/telao - assim
+// eventos antigos ficam guardados no banco sem poluir a listagem do evento
+// em andamento. Trocar a cada novo evento.
+const CURRENT_EVENT_START_DATE = "2026-09-22";
+const CURRENT_EVENT_END_DATE = "2026-09-23";
 
 const TZ = "America/Sao_Paulo";
 
@@ -40,6 +43,9 @@ async function fetchPanels() {
   const { data, error } = await sb
     .from("vcday_panels")
     .select("*")
+    .gte("event_date", CURRENT_EVENT_START_DATE)
+    .lte("event_date", CURRENT_EVENT_END_DATE)
+    .order("event_date", { ascending: true })
     .order("sort_order", { ascending: true });
   if (error) {
     console.error(error);
@@ -72,8 +78,8 @@ function panelPhase(panel, nowMin) {
   if (panel.status_override) return panel.status_override;
 
   const today = todayDateStringSaoPaulo();
-  if (today < EVENT_DATE) return "soon";
-  if (today > EVENT_DATE) return "done";
+  if (today < panel.event_date) return "soon";
+  if (today > panel.event_date) return "done";
 
   const start = timeToMinutes(panel.starts_at);
   const end = timeToMinutes(panel.ends_at) + PANEL_GRACE_MINUTES;
@@ -82,8 +88,13 @@ function panelPhase(panel, nowMin) {
   return "done";
 }
 
+function formatEventDate(panel) {
+  const [, m, d] = panel.event_date.split("-");
+  return `${d}/${m}`;
+}
+
 function formatRange(panel) {
-  return `${panel.starts_at.slice(0, 5)}–${panel.ends_at.slice(0, 5)}`;
+  return `${formatEventDate(panel)} · ${panel.starts_at.slice(0, 5)}–${panel.ends_at.slice(0, 5)}`;
 }
 
 function qs(name) {

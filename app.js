@@ -6,7 +6,7 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // Identifica a edicao do evento para as avaliacoes, permitindo reaproveitar
 // vcday_evaluations em futuros eventos sem misturar os resultados. Trocar a
 // cada novo evento.
-const EVENT_SLUG = "vcday-2026";
+const EVENT_SLUG = "congresso-2026";
 
 // Janela de datas (America/Sao_Paulo, YYYY-MM-DD) do evento atual. So os
 // paineis com event_date dentro dessa janela aparecem no hub/telao - assim

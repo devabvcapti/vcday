@@ -6,7 +6,7 @@
   <title>Perguntas · Congresso ABVCAP 2026</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" />
-  <link rel="stylesheet" href="styles.css?v=9" />
+  <link rel="stylesheet" href="styles.css?v=10" />
 </head>
 <body>
   <div class="site-topbar"><div class="site-topbar-inner"><img src="assets/logo-negativo.png" alt="ABVCAP" class="brand-logo" /></div></div>
@@ -18,6 +18,8 @@
       <p>Selecione o painel em andamento (ou o próximo) e envie sua pergunta. A equipe de moderação fará a seleção das perguntas que serão enviadas aos painelistas.</p>
     </div>
 
+    <div class="day-tabs" id="day-tabs"></div>
+
     <div id="panels" class="panel-list">
       <div class="card" style="padding: 18px; color: var(--ink-faint);">Carregando painéis…</div>
     </div>
@@ -28,19 +30,43 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=12"></script>
+  <script src="app.js?v=13"></script>
   <script>
     (async function () {
       const panels = await fetchPanels();
       const nowMin = nowMinutesSaoPaulo();
       const list = document.getElementById("panels");
+      const dayTabsEl = document.getElementById("day-tabs");
 
       if (!panels.length) {
         list.innerHTML = '<div class="card" style="padding:18px;color:var(--ink-faint);">Nenhum painel cadastrado ainda.</div>';
         return;
       }
 
-      list.innerHTML = panels
+      const days = uniqueEventDates(panels);
+      const today = todayDateStringSaoPaulo();
+      let selectedDay = days.includes(today) ? today : days[0];
+
+      function renderDayTabs() {
+        if (days.length < 2) return;
+        dayTabsEl.innerHTML = days
+          .map((d, i) => {
+            const [, m, dd] = d.split("-");
+            return `<button type="button" class="day-tab${d === selectedDay ? " active" : ""}" data-day="${d}">Dia ${i + 1} · ${dd}/${m}</button>`;
+          })
+          .join("");
+        dayTabsEl.querySelectorAll(".day-tab").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            selectedDay = btn.dataset.day;
+            renderDayTabs();
+            renderPanels();
+          });
+        });
+      }
+
+      function renderPanels() {
+        const dayPanels = panels.filter((p) => p.event_date === selectedDay);
+        list.innerHTML = dayPanels
         .map((p) => {
           const phase = panelPhase(p, nowMin);
           const tag =
@@ -75,6 +101,10 @@
           `;
         })
         .join("");
+      }
+
+      renderDayTabs();
+      renderPanels();
     })();
   </script>
 </body>

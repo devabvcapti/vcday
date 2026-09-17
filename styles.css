@@ -142,6 +142,20 @@ a { color: inherit; }
   gap: 12px;
 }
 
+.day-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.day-tab {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--borda);
+  background: var(--branco);
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.day-tab.active { background: var(--navy); color: var(--branco); border-color: var(--navy); }
+
 .panel-row {
   display: flex;
   align-items: center;

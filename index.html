@@ -18,7 +18,7 @@
   <div class="site-topbar-stripe"></div>
   <div class="wrap">
     <div class="header">
-      <span class="eyebrow">Congresso ABVCAP 2026 · 22 e 23 de setembro</span>
+      <span class="eyebrow" id="hub-eyebrow">Congresso ABVCAP 2026 · 22 e 23 de setembro</span>
       <h1 id="hub-title">Pergunte aos painelistas</h1>
       <p id="hub-subtitle">Selecione o painel em andamento (ou o próximo) e envie sua pergunta. A equipe de moderação fará a seleção das perguntas que serão enviadas aos painelistas.</p>
     </div>
@@ -35,11 +35,12 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=14"></script>
+  <script src="app.js?v=15"></script>
   <script>
     (async function () {
       document.documentElement.lang = getLang() === "en" ? "en" : "pt-BR";
       renderLangToggle();
+      document.getElementById("hub-eyebrow").textContent = `Congresso ABVCAP 2026 · ${t("eventDates")}`;
       document.getElementById("hub-title").textContent = t("hubTitle");
       document.getElementById("hub-subtitle").textContent = t("hubSubtitle");
       document.getElementById("evaluate-event-link").textContent = t("evaluateEvent");
@@ -62,8 +63,7 @@
         if (days.length < 2) return;
         dayTabsEl.innerHTML = days
           .map((d, i) => {
-            const [, m, dd] = d.split("-");
-            return `<button type="button" class="day-tab${d === selectedDay ? " active" : ""}" data-day="${d}">${t("day")} ${i + 1} · ${dd}/${m}</button>`;
+            return `<button type="button" class="day-tab${d === selectedDay ? " active" : ""}" data-day="${d}">${t("day")} ${i + 1} · ${formatDateForLang(d)}</button>`;
           })
           .join("");
         dayTabsEl.querySelectorAll(".day-tab").forEach((btn) => {

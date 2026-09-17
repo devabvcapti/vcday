@@ -97,9 +97,19 @@ function panelPhase(panel, nowMin) {
   return "done";
 }
 
-function formatEventDate(panel) {
-  const [, m, d] = panel.event_date.split("-");
+const MONTH_ABBR_EN = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+/** Formata uma data YYYY-MM-DD no idioma atual: "DD/MM" em pt, "Mon D" em en (evita ambiguidade DD/MM x MM/DD). */
+function formatDateForLang(dateStr) {
+  const [, m, d] = dateStr.split("-");
+  if (getLang() === "en") {
+    return `${MONTH_ABBR_EN[Number(m) - 1]} ${Number(d)}`;
+  }
   return `${d}/${m}`;
+}
+
+function formatEventDate(panel) {
+  return formatDateForLang(panel.event_date);
 }
 
 function formatRange(panel) {
@@ -160,6 +170,7 @@ function setLang(lang) {
 
 const I18N = {
   pt: {
+    eventDates: "22 e 23 de setembro",
     hubTitle: "Pergunte aos painelistas",
     hubSubtitle: "Selecione o painel em andamento (ou o próximo) e envie sua pergunta. A equipe de moderação fará a seleção das perguntas que serão enviadas aos painelistas.",
     loadingPanels: "Carregando painéis…",
@@ -216,6 +227,7 @@ const I18N = {
     sendEvaluation: "Enviar avaliação",
   },
   en: {
+    eventDates: "September 22–23",
     hubTitle: "Ask the panelists",
     hubSubtitle: "Select the panel that's happening now (or next) and send your question. The moderation team will select the questions sent to the panelists.",
     loadingPanels: "Loading panels…",

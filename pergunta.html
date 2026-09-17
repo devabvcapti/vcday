@@ -49,7 +49,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=15"></script>
+  <script src="app.js?v=16"></script>
   <script>
     (async function () {
       document.documentElement.lang = getLang() === "en" ? "en" : "pt-BR";
@@ -88,7 +88,7 @@
       timeEl.textContent = `Congresso ABVCAP 2026 · ${formatRange(panel)}`;
       if (panel.speakers) {
         const speakersEl = document.getElementById("panel-speakers");
-        speakersEl.textContent = `${t("speakersLabel")}: ${panel.speakers}`;
+        speakersEl.textContent = `${t("speakersLabel")}: ${formatSpeakers(panel)}`;
         speakersEl.style.display = "block";
       }
       document.getElementById("success-evaluate-link").href = `avaliacao.html?p=${encodeURIComponent(panel.id)}`;

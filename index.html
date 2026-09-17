@@ -35,7 +35,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=15"></script>
+  <script src="app.js?v=16"></script>
   <script>
     (async function () {
       document.documentElement.lang = getLang() === "en" ? "en" : "pt-BR";
@@ -88,7 +88,7 @@
           const titleBlock = `
             <span class="title-block">
               <span class="title">${escapeHtml(panelName(p))}</span>
-              ${p.speakers ? `<span class="speakers">${t("speakersLabel")}: ${escapeHtml(p.speakers)}</span>` : ""}
+              ${p.speakers ? `<span class="speakers">${t("speakersLabel")}: ${escapeHtml(formatSpeakers(p))}</span>` : ""}
             </span>
           `;
           if (phase === "done") {

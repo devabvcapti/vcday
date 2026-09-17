@@ -295,6 +295,12 @@ function panelName(panel) {
   return getLang() === "en" && panel.name_en ? panel.name_en : panel.name;
 }
 
+/** Lista de speakers (nomes nao sao traduzidos, so o "e" que os une em ingles). */
+function formatSpeakers(panel) {
+  if (!panel.speakers) return "";
+  return getLang() === "en" ? panel.speakers.replace(/ e /g, " and ") : panel.speakers;
+}
+
 function renderLangToggle() {
   const el = document.getElementById("lang-toggle");
   if (!el) return;

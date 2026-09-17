@@ -41,6 +41,17 @@
     #login-card p { color: var(--ink-soft); font-size: 14px; margin: 8px 0 18px; }
     #login-error { color: var(--danger); font-size: 13px; margin-top: 10px; min-height: 18px; }
 
+    .event-select-row { margin-bottom: 18px; }
+    .event-select-row label {
+      display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.05em;
+      text-transform: uppercase; color: var(--ink-faint); margin-bottom: 6px;
+    }
+    #event-select {
+      font-family: inherit; font-size: 14px; font-weight: 600; color: var(--navy);
+      padding: 8px 12px; border-radius: 4px; border: 1px solid var(--line);
+      background: var(--surface);
+    }
+
     .view-switch { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid var(--line); }
     .view-tab {
       appearance: none; border: none; background: none; cursor: pointer;
@@ -84,6 +95,11 @@
       <p class="speakers" id="panel-speakers" style="display: none;"></p>
     </div>
 
+    <div class="event-select-row">
+      <label for="event-select">Evento</label>
+      <select id="event-select"></select>
+    </div>
+
     <div class="view-switch">
       <button type="button" class="view-tab active" id="switch-questions">Perguntas</button>
       <button type="button" class="view-tab" id="switch-evaluations">Avaliações do evento</button>
@@ -116,19 +132,43 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=11"></script>
+  <script src="app.js?v=12"></script>
   <script>
     (function () {
       let passcode = sessionStorage.getItem("vcday_mod_passcode") || "";
       let panels = [];
       let activePanelId = qs("p") || "";
+      let selectedEvent = KNOWN_EVENTS[0];
 
       const loginView = document.getElementById("login-view");
       const adminView = document.getElementById("admin-view");
       const loginError = document.getElementById("login-error");
 
+      const eventSelectEl = document.getElementById("event-select");
+      eventSelectEl.innerHTML = KNOWN_EVENTS.map(
+        (ev, i) => `<option value="${i}">${escapeHtml(ev.label)}</option>`
+      ).join("");
+      eventSelectEl.addEventListener("change", async () => {
+        selectedEvent = KNOWN_EVENTS[Number(eventSelectEl.value)];
+        activePanelId = "";
+        panels = await fetchPanels(selectedEvent.start, selectedEvent.end);
+        if (!panels.length) {
+          document.getElementById("panel-tabs").innerHTML = "";
+          document.getElementById("panel-name").textContent = "Nenhum painel neste evento";
+          ["list-pending", "list-approved", "list-history"].forEach(
+            (id) => (document.getElementById(id).innerHTML = "")
+          );
+          return;
+        }
+        activePanelId = (pickDefaultPanel(panels) || panels[0]).id;
+        history.replaceState(null, "", `?p=${activePanelId}`);
+        renderTabs();
+        loadQuestions();
+        if (switchEvaluations.classList.contains("active")) loadEvaluations();
+      });
+
       async function tryLogin(code) {
-        const panelsList = await fetchPanels();
+        const panelsList = await fetchPanels(selectedEvent.start, selectedEvent.end);
         panels = panelsList;
         if (!panels.length) {
           loginError.textContent = "Nenhum painel cadastrado ainda.";
@@ -280,7 +320,7 @@
       async function loadEvaluations() {
         const { data, error } = await sb.rpc("vcday_admin_list_evaluations", {
           p_passcode: passcode,
-          p_event_slug: EVENT_SLUG,
+          p_event_slug: selectedEvent.slug,
         });
         if (error) {
           alert("Sessão expirou ou senha inválida. Recarregue a página.");

@@ -15,6 +15,15 @@ const EVENT_SLUG = "congresso-2026";
 const CURRENT_EVENT_START_DATE = "2026-09-22";
 const CURRENT_EVENT_END_DATE = "2026-09-23";
 
+// Historico de eventos ja rodados neste site (nao vem de uma tabela - e so
+// para a moderacao poder trocar de evento e revisar perguntas/avaliacoes
+// antigas). Adicionar uma linha aqui a cada evento novo, mantendo as
+// anteriores.
+const KNOWN_EVENTS = [
+  { label: "Congresso ABVCAP 2026 (22-23/09)", slug: "congresso-2026", start: "2026-09-22", end: "2026-09-23" },
+  { label: "VC Day 2026 (16/09)", slug: "vcday-2026", start: "2026-09-16", end: "2026-09-16" },
+];
+
 const TZ = "America/Sao_Paulo";
 
 function nowInSaoPaulo() {
@@ -39,12 +48,12 @@ function nowMinutesSaoPaulo() {
   return d.getHours() * 60 + d.getMinutes();
 }
 
-async function fetchPanels() {
+async function fetchPanels(startDate = CURRENT_EVENT_START_DATE, endDate = CURRENT_EVENT_END_DATE) {
   const { data, error } = await sb
     .from("vcday_panels")
     .select("*")
-    .gte("event_date", CURRENT_EVENT_START_DATE)
-    .lte("event_date", CURRENT_EVENT_END_DATE)
+    .gte("event_date", startDate)
+    .lte("event_date", endDate)
     .order("event_date", { ascending: true })
     .order("sort_order", { ascending: true });
   if (error) {

@@ -99,15 +99,18 @@ a { color: inherit; }
   appearance: none;
   border: 1px solid transparent;
   background: none;
-  font-size: 18px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  letter-spacing: 0.04em;
   line-height: 1;
   padding: 4px 6px;
   border-radius: 6px;
   cursor: pointer;
-  opacity: 0.5;
-  filter: grayscale(60%);
+  color: var(--verde);
+  opacity: 0.55;
 }
-.lang-flag.active { opacity: 1; filter: none; border-color: rgba(255, 255, 255, 0.35); }
+.lang-flag.active { opacity: 1; border-color: var(--verde); }
 
 .site-topbar .brand-logo {
   height: 24px;

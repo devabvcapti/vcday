@@ -52,7 +52,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=18"></script>
+  <script src="app.js?v=19"></script>
   <script>
     (async function () {
       document.documentElement.lang = getLang() === "en" ? "en" : "pt-BR";
@@ -102,6 +102,14 @@
         timeEl.textContent = `${t("eventName")} · ${formatRange(panel)} ${t("closedSuffix")}`;
         document.getElementById("form-card").innerHTML = `
           <p style="margin: 0 0 14px; color: var(--ink-soft);">${t("panelClosedText")}</p>
+          <a class="btn btn-accent btn-block" href="avaliacao.html?p=${encodeURIComponent(panel.id)}" style="display: block; text-align: center; text-decoration: none;">${t("evaluateThisPanel")}</a>
+        `;
+        return;
+      }
+
+      if (!panel.qa_enabled) {
+        document.getElementById("form-card").innerHTML = `
+          <p style="margin: 0 0 14px; color: var(--ink-soft);">${t("noQAText")}</p>
           <a class="btn btn-accent btn-block" href="avaliacao.html?p=${encodeURIComponent(panel.id)}" style="display: block; text-align: center; text-decoration: none;">${t("evaluateThisPanel")}</a>
         `;
         return;

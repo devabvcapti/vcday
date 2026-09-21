@@ -38,7 +38,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=18"></script>
+  <script src="app.js?v=19"></script>
   <script>
     (async function () {
       document.documentElement.lang = getLang() === "en" ? "en" : "pt-BR";
@@ -96,7 +96,7 @@
               ${p.speakers ? `<span class="speakers">${t("speakersLabel")}: ${escapeHtml(formatSpeakers(p))}</span>` : ""}
             </span>
           `;
-          if (phase === "done") {
+          if (phase === "done" || !p.qa_enabled) {
             return `
               <div class="card panel-row panel-row-disabled">
                 <span class="time">${formatTimeOnly(p)}</span>

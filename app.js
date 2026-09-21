@@ -188,6 +188,7 @@ const I18N = {
     evaluateShort: "Avaliar →",
     evaluateEvent: "Avaliar o evento →",
     speakersLabel: "Speakers",
+    speakerLabel: "Speaker",
     footerHome: "← Ver todos os painéis",
     loadingPanel: "Carregando painel…",
     panelNotProvided: "Painel não informado",
@@ -247,6 +248,7 @@ const I18N = {
     evaluateShort: "Rate →",
     evaluateEvent: "Rate the event →",
     speakersLabel: "Speakers",
+    speakerLabel: "Speaker",
     footerHome: "← See all panels",
     loadingPanel: "Loading panel…",
     panelNotProvided: "Panel not specified",
@@ -308,6 +310,17 @@ function panelName(panel) {
 function formatSpeakers(panel) {
   if (!panel.speakers) return "";
   return getLang() === "en" ? panel.speakers.replace(/ e /g, " and ") : panel.speakers;
+}
+
+/** Quantidade de nomes em panel.speakers (separados por virgula e/ou " e "). */
+function speakerCount(panel) {
+  if (!panel.speakers) return 0;
+  return panel.speakers.replace(/ e /g, ", ").split(",").map((s) => s.trim()).filter(Boolean).length;
+}
+
+/** "Speaker" no singular, "Speakers" no plural, conforme a quantidade. */
+function speakersLabelFor(panel) {
+  return t(speakerCount(panel) === 1 ? "speakerLabel" : "speakersLabel");
 }
 
 function renderLangToggle() {

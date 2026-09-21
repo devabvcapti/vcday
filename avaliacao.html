@@ -80,7 +80,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=19"></script>
+  <script src="app.js?v=20"></script>
   <script>
     (async function () {
       document.documentElement.lang = getLang() === "en" ? "en" : "pt-BR";
@@ -126,7 +126,7 @@
         titleEl.textContent = panelName(panel);
         if (panel.speakers) {
           const speakersEl = document.getElementById("context-speakers");
-          speakersEl.textContent = `${t("speakersLabel")}: ${formatSpeakers(panel)}`;
+          speakersEl.textContent = `${speakersLabelFor(panel)}: ${formatSpeakers(panel)}`;
           speakersEl.style.display = "block";
         }
         subtitleEl.textContent = t("evaluatePanelSubtitle");

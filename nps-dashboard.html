@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard NPS · ABVCAP Experience 2026</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png" />
+  <link rel="apple-touch-icon" href="assets/favicon-180.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" />
+  <link rel="stylesheet" href="styles.css?v=14" />
+  <style>
+    .wrap-wide { max-width: 860px; margin-inline: auto; padding-block: 28px 64px; }
+    #login-card { max-width: 360px; margin: 15vh auto 0; padding: 26px; text-align: center; }
+    #login-card p { color: var(--ink-soft); font-size: 14px; margin: 8px 0 18px; }
+    #login-error { color: var(--danger); font-size: 13px; margin-top: 10px; min-height: 18px; }
+
+    .survey-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+    .survey-tab {
+      font-family: inherit; font-size: 13px; font-weight: 600; padding: 8px 14px;
+      border-radius: 999px; border: 1px solid var(--line); background: var(--surface);
+      color: var(--ink-soft); cursor: pointer;
+    }
+    .survey-tab.active { background: var(--navy); color: var(--branco); border-color: var(--navy); }
+
+    .stat-card { padding: 18px 20px; margin-bottom: 14px; }
+    .stat-q { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 12px; line-height: 1.4; }
+    .stat-empty { color: var(--ink-faint); font-size: 13px; }
+
+    .score-row { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+    .score-value { font-family: "Source Serif 4", Georgia, serif; font-size: 34px; font-weight: 700; color: var(--navy); }
+    .score-value.good { color: var(--verde-texto); }
+    .score-value.bad { color: var(--danger); }
+    .score-breakdown { font-size: 12px; color: var(--ink-faint); }
+    .score-breakdown span { margin-right: 12px; }
+    .score-count { font-size: 12px; color: var(--ink-faint); margin-top: 6px; }
+
+    .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 13px; }
+    .bar-label { flex: 0 0 46%; color: var(--ink-soft); }
+    .bar-track { flex: 1; height: 8px; background: var(--line); border-radius: 999px; overflow: hidden; }
+    .bar-fill { height: 100%; background: var(--verde); border-radius: 999px; }
+    .bar-value { flex: 0 0 auto; font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--ink-faint); white-space: nowrap; }
+
+    .text-answers { display: flex; flex-direction: column; gap: 8px; max-height: 340px; overflow-y: auto; margin-top: 4px; }
+    .text-answer { font-size: 13px; color: var(--ink-soft); padding: 10px 12px; background: var(--bg); border-radius: 4px; border: 1px solid var(--line); }
+
+    .dashboard-summary { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 20px; flex-wrap: wrap; gap: 8px; }
+    .dashboard-summary h2 { font-size: 20px; }
+    .dashboard-summary .hint { margin: 0; }
+
+    @media (max-width: 460px) {
+      .bar-row { flex-wrap: wrap; }
+      .bar-label { flex: 1 1 100%; }
+      .bar-track { order: 3; flex: 1 1 auto; }
+      .bar-value { order: 2; margin-left: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="site-topbar"><div class="site-topbar-inner"><img src="assets/logo-negativo.png" alt="ABVCAP" class="brand-logo" /></div></div>
+  <div class="site-topbar-stripe"></div>
+
+  <div id="login-view" class="wrap">
+    <div class="card" id="login-card">
+      <span class="eyebrow">ABVCAP Experience 2026</span>
+      <h1 style="font-size: 22px; margin-top: 10px;">Dashboard das pesquisas NPS</h1>
+      <p>Digite a senha da equipe para ver os resultados.</p>
+      <div class="field" style="text-align: left;">
+        <input type="text" id="passcode" placeholder="Senha da moderação" autocomplete="off" />
+      </div>
+      <button class="btn btn-accent btn-block" id="login-btn">Entrar</button>
+      <div id="login-error"></div>
+    </div>
+  </div>
+
+  <div id="dashboard-view" class="wrap-wide" style="display: none;">
+    <div class="header">
+      <span class="eyebrow">ABVCAP Experience 2026 · Resultados das pesquisas</span>
+      <h1 style="font-size: 24px;">Dashboard NPS</h1>
+    </div>
+
+    <div class="survey-tabs" id="survey-tabs"></div>
+    <div id="dashboard-content"></div>
+
+    <a class="btn btn-ghost btn-block" href="#" id="refresh-btn" style="display: block; margin-top: 8px; text-align: center; text-decoration: none;">Atualizar respostas</a>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js?v=21"></script>
+  <script src="nps.js?v=1"></script>
+  <script>
+    (function () {
+      let passcode = sessionStorage.getItem("vcday_mod_passcode") || "";
+      let allResponses = [];
+      const surveyKeys = Object.keys(SURVEYS);
+      let selectedSurvey = surveyKeys[0];
+
+      const loginView = document.getElementById("login-view");
+      const dashboardView = document.getElementById("dashboard-view");
+      const passInput = document.getElementById("passcode");
+      const loginError = document.getElementById("login-error");
+
+      async function loadResponses(code) {
+        const { data, error } = await sb.rpc("vcday_admin_list_nps_responses", { p_passcode: code });
+        if (error) return false;
+        allResponses = data || [];
+        return true;
+      }
+
+      function npsCategory(score) {
+        if (score >= 9) return "promoter";
+        if (score >= 7) return "passive";
+        return "detractor";
+      }
+
+      function computeNpsScore(responses, qid) {
+        const scores = responses.map((r) => r.answers[qid]).filter((v) => typeof v === "number");
+        if (!scores.length) return null;
+        const promoters = scores.filter((s) => s >= 9).length;
+        const detractors = scores.filter((s) => s <= 6).length;
+        const passives = scores.length - promoters - detractors;
+        const nps = Math.round(((promoters - detractors) / scores.length) * 100);
+        return { nps, promoters, passives, detractors, total: scores.length };
+      }
+
+      function computeAverage(responses, qid) {
+        const scores = responses.map((r) => r.answers[qid]).filter((v) => typeof v === "number");
+        if (!scores.length) return null;
+        return { avg: scores.reduce((a, b) => a + b, 0) / scores.length, total: scores.length };
+      }
+
+      function computeChoiceCounts(responses, qid) {
+        const counts = {};
+        let total = 0;
+        responses.forEach((r) => {
+          const val = r.answers[qid];
+          if (val === undefined) return;
+          total++;
+          (Array.isArray(val) ? val : [val]).forEach((v) => {
+            counts[v] = (counts[v] || 0) + 1;
+          });
+        });
+        return { counts, total };
+      }
+
+      function barRow(label, count, total, maxCount) {
+        const pct = total ? Math.round((count / total) * 100) : 0;
+        const width = maxCount ? Math.round((count / maxCount) * 100) : 0;
+        return `
+          <div class="bar-row">
+            <span class="bar-label">${escapeHtml(label)}</span>
+            <div class="bar-track"><div class="bar-fill" style="width:${width}%"></div></div>
+            <span class="bar-value">${count} · ${pct}%</span>
+          </div>
+        `;
+      }
+
+      function renderQuestionCard(q, responses) {
+        if (q.type === "nps" || q.type === "scale") {
+          const avgData = computeAverage(responses, q.id);
+          if (!avgData) {
+            return `<div class="card stat-card"><div class="stat-q">${escapeHtml(q.text)}</div><p class="stat-empty">Sem respostas ainda.</p></div>`;
+          }
+          if (q.primary) {
+            const s = computeNpsScore(responses, q.id);
+            const cls = s.nps >= 50 ? "good" : s.nps < 0 ? "bad" : "";
+            return `
+              <div class="card stat-card">
+                <div class="stat-q">${escapeHtml(q.text)}</div>
+                <div class="score-row">
+                  <span class="score-value ${cls}">NPS ${s.nps}</span>
+                  <span class="score-breakdown">
+                    <span>${s.promoters} promotores</span>
+                    <span>${s.passives} neutros</span>
+                    <span>${s.detractors} detratores</span>
+                  </span>
+                </div>
+                <div class="score-count">${s.total} resposta${s.total === 1 ? "" : "s"}</div>
+              </div>
+            `;
+          }
+          return `
+            <div class="card stat-card">
+              <div class="stat-q">${escapeHtml(q.text)}</div>
+              <div class="score-row"><span class="score-value">${avgData.avg.toFixed(1)}<span style="font-size:16px;color:var(--ink-faint);font-weight:500;">/10</span></span></div>
+              <div class="score-count">${avgData.total} resposta${avgData.total === 1 ? "" : "s"}</div>
+            </div>
+          `;
+        }
+
+        if (q.type === "single" || q.type === "multi") {
+          const { counts, total } = computeChoiceCounts(responses, q.id);
+          if (!total) {
+            return `<div class="card stat-card"><div class="stat-q">${escapeHtml(q.text)}</div><p class="stat-empty">Sem respostas ainda.</p></div>`;
+          }
+          const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+          const maxCount = entries[0][1];
+          return `
+            <div class="card stat-card">
+              <div class="stat-q">${escapeHtml(q.text)}</div>
+              ${entries.map(([label, count]) => barRow(label, count, total, maxCount)).join("")}
+              <div class="score-count">${total} resposta${total === 1 ? "" : "s"}</div>
+            </div>
+          `;
+        }
+
+        if (q.type === "text") {
+          const answers = responses.map((r) => r.answers[q.id]).filter(Boolean);
+          if (!answers.length) {
+            return `<div class="card stat-card"><div class="stat-q">${escapeHtml(q.text)}</div><p class="stat-empty">Sem comentários ainda.</p></div>`;
+          }
+          return `
+            <div class="card stat-card">
+              <div class="stat-q">${escapeHtml(q.text)} <span class="stat-empty">(${answers.length})</span></div>
+              <div class="text-answers">${answers.map((a) => `<div class="text-answer">${escapeHtml(a)}</div>`).join("")}</div>
+            </div>
+          `;
+        }
+
+        return "";
+      }
+
+      function renderSurveyDashboard(surveyKey) {
+        const survey = SURVEYS[surveyKey];
+        const responses = allResponses.filter((r) => r.survey_slug === surveyKey);
+        const content = document.getElementById("dashboard-content");
+        content.innerHTML = `
+          <div class="dashboard-summary">
+            <h2>${escapeHtml(survey.title.replace("Pesquisa · ", ""))}</h2>
+            <p class="hint">${responses.length} resposta${responses.length === 1 ? "" : "s"} recebidas</p>
+          </div>
+          ${survey.questions.map((q) => renderQuestionCard(q, responses)).join("")}
+        `;
+      }
+
+      function renderTabs() {
+        const tabsEl = document.getElementById("survey-tabs");
+        tabsEl.innerHTML = surveyKeys
+          .map((key) => {
+            const count = allResponses.filter((r) => r.survey_slug === key).length;
+            return `<button type="button" class="survey-tab${key === selectedSurvey ? " active" : ""}" data-key="${key}">${escapeHtml(SURVEYS[key].title.replace("Pesquisa · ", ""))} (${count})</button>`;
+          })
+          .join("");
+        tabsEl.querySelectorAll(".survey-tab").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            selectedSurvey = btn.dataset.key;
+            renderTabs();
+            renderSurveyDashboard(selectedSurvey);
+          });
+        });
+      }
+
+      function showDashboard() {
+        loginView.style.display = "none";
+        dashboardView.style.display = "block";
+        renderTabs();
+        renderSurveyDashboard(selectedSurvey);
+      }
+
+      document.getElementById("login-btn").addEventListener("click", async () => {
+        const code = passInput.value.trim();
+        if (!code) return;
+        loginError.textContent = "";
+        const ok = await loadResponses(code);
+        if (!ok) {
+          loginError.textContent = "Senha incorreta.";
+          return;
+        }
+        passcode = code;
+        sessionStorage.setItem("vcday_mod_passcode", code);
+        showDashboard();
+      });
+
+      passInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") document.getElementById("login-btn").click();
+      });
+
+      document.getElementById("refresh-btn").addEventListener("click", async (e) => {
+        e.preventDefault();
+        const ok = await loadResponses(passcode);
+        if (ok) {
+          renderTabs();
+          renderSurveyDashboard(selectedSurvey);
+        }
+      });
+
+      (async function autoLogin() {
+        if (!passcode) return;
+        const ok = await loadResponses(passcode);
+        if (ok) showDashboard();
+      })();
+    })();
+  </script>
+</body>
+</html>

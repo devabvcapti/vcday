@@ -18,12 +18,13 @@
   <div class="site-topbar">
     <div class="site-topbar-inner">
       <img src="assets/logo-negativo.png" alt="ABVCAP" class="brand-logo" />
+      <div class="lang-toggle" id="lang-toggle"></div>
     </div>
   </div>
   <div class="site-topbar-stripe"></div>
   <div class="wrap">
     <div class="header">
-      <span class="eyebrow">ABVCAP Experience 2026 · Pesquisa pós-evento</span>
+      <span class="eyebrow" id="nps-eyebrow">ABVCAP Experience 2026 · Pesquisa pós-evento</span>
       <h1 id="nps-title">Pesquisa</h1>
       <p id="nps-audience"></p>
       <p id="nps-intro" style="display: none;"></p>
@@ -33,8 +34,10 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="app.js?v=21"></script>
-  <script src="nps.js?v=1"></script>
+  <script src="nps.js?v=2"></script>
   <script>
+    document.documentElement.lang = getLang() === "en" ? "en" : "pt-BR";
+    renderLangToggle();
     renderSurvey("patrocinadores", "nps-root");
   </script>
 </body>

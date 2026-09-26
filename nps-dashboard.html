@@ -91,13 +91,31 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="app.js?v=21"></script>
-  <script src="nps.js?v=1"></script>
+  <script src="nps.js?v=2"></script>
   <script>
     (function () {
       let passcode = sessionStorage.getItem("vcday_mod_passcode") || "";
       let allResponses = [];
+      let panelNameMap = {};
       const surveyKeys = Object.keys(SURVEYS);
       let selectedSurvey = surveyKeys[0];
+
+      // Dashboard fica sempre em portugues (uso interno), entao resolve nomes
+      // de painel direto de panel.name (nao panelName(), que seguiria o idioma
+      // salvo no navegador de quem estiver logado).
+      async function loadPanelNames() {
+        const panels = await fetchPanels();
+        panels.forEach((p) => { panelNameMap[p.id] = p.name; });
+      }
+      loadPanelNames();
+
+      /** Perguntas de escolha guardam um valor canonico (ex.: "moderador", "painel-3-geopolitica");
+       *  aqui resolvemos de volta para o rotulo em portugues para exibir no grafico. */
+      function resolveChoiceLabel(q, value) {
+        if (q.optionsSource === "panels") return panelNameMap[value] || value;
+        const found = (q.options || []).find((o) => o.value === value);
+        return found ? found.pt : value;
+      }
 
       const loginView = document.getElementById("login-view");
       const dashboardView = document.getElementById("dashboard-view");
@@ -163,14 +181,14 @@
         if (q.type === "nps" || q.type === "scale") {
           const avgData = computeAverage(responses, q.id);
           if (!avgData) {
-            return `<div class="card stat-card"><div class="stat-q">${escapeHtml(q.text)}</div><p class="stat-empty">Sem respostas ainda.</p></div>`;
+            return `<div class="card stat-card"><div class="stat-q">${escapeHtml(q.text.pt)}</div><p class="stat-empty">Sem respostas ainda.</p></div>`;
           }
           if (q.primary) {
             const s = computeNpsScore(responses, q.id);
             const cls = s.nps >= 50 ? "good" : s.nps < 0 ? "bad" : "";
             return `
               <div class="card stat-card">
-                <div class="stat-q">${escapeHtml(q.text)}</div>
+                <div class="stat-q">${escapeHtml(q.text.pt)}</div>
                 <div class="score-row">
                   <span class="score-value ${cls}">NPS ${s.nps}</span>
                   <span class="score-breakdown">
@@ -185,7 +203,7 @@
           }
           return `
             <div class="card stat-card">
-              <div class="stat-q">${escapeHtml(q.text)}</div>
+              <div class="stat-q">${escapeHtml(q.text.pt)}</div>
               <div class="score-row"><span class="score-value">${avgData.avg.toFixed(1)}<span style="font-size:16px;color:var(--ink-faint);font-weight:500;">/10</span></span></div>
               <div class="score-count">${avgData.total} resposta${avgData.total === 1 ? "" : "s"}</div>
             </div>
@@ -195,14 +213,14 @@
         if (q.type === "single" || q.type === "multi") {
           const { counts, total } = computeChoiceCounts(responses, q.id);
           if (!total) {
-            return `<div class="card stat-card"><div class="stat-q">${escapeHtml(q.text)}</div><p class="stat-empty">Sem respostas ainda.</p></div>`;
+            return `<div class="card stat-card"><div class="stat-q">${escapeHtml(q.text.pt)}</div><p class="stat-empty">Sem respostas ainda.</p></div>`;
           }
           const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
           const maxCount = entries[0][1];
           return `
             <div class="card stat-card">
-              <div class="stat-q">${escapeHtml(q.text)}</div>
-              ${entries.map(([label, count]) => barRow(label, count, total, maxCount)).join("")}
+              <div class="stat-q">${escapeHtml(q.text.pt)}</div>
+              ${entries.map(([value, count]) => barRow(resolveChoiceLabel(q, value), count, total, maxCount)).join("")}
               <div class="score-count">${total} resposta${total === 1 ? "" : "s"}</div>
             </div>
           `;
@@ -211,11 +229,11 @@
         if (q.type === "text") {
           const answers = responses.map((r) => r.answers[q.id]).filter(Boolean);
           if (!answers.length) {
-            return `<div class="card stat-card"><div class="stat-q">${escapeHtml(q.text)}</div><p class="stat-empty">Sem comentários ainda.</p></div>`;
+            return `<div class="card stat-card"><div class="stat-q">${escapeHtml(q.text.pt)}</div><p class="stat-empty">Sem comentários ainda.</p></div>`;
           }
           return `
             <div class="card stat-card">
-              <div class="stat-q">${escapeHtml(q.text)} <span class="stat-empty">(${answers.length})</span></div>
+              <div class="stat-q">${escapeHtml(q.text.pt)} <span class="stat-empty">(${answers.length})</span></div>
               <div class="text-answers">${answers.map((a) => `<div class="text-answer">${escapeHtml(a)}</div>`).join("")}</div>
             </div>
           `;
@@ -230,7 +248,7 @@
         const content = document.getElementById("dashboard-content");
         content.innerHTML = `
           <div class="dashboard-summary">
-            <h2>${escapeHtml(survey.title.replace("Pesquisa · ", ""))}</h2>
+            <h2>${escapeHtml(survey.title.pt.replace("Pesquisa · ", ""))}</h2>
             <p class="hint">${responses.length} resposta${responses.length === 1 ? "" : "s"} recebidas</p>
           </div>
           ${survey.questions.map((q) => renderQuestionCard(q, responses)).join("")}
@@ -242,7 +260,7 @@
         tabsEl.innerHTML = surveyKeys
           .map((key) => {
             const count = allResponses.filter((r) => r.survey_slug === key).length;
-            return `<button type="button" class="survey-tab${key === selectedSurvey ? " active" : ""}" data-key="${key}">${escapeHtml(SURVEYS[key].title.replace("Pesquisa · ", ""))} (${count})</button>`;
+            return `<button type="button" class="survey-tab${key === selectedSurvey ? " active" : ""}" data-key="${key}">${escapeHtml(SURVEYS[key].title.pt.replace("Pesquisa · ", ""))} (${count})</button>`;
           })
           .join("");
         tabsEl.querySelectorAll(".survey-tab").forEach((btn) => {

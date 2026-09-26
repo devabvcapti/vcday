@@ -106,7 +106,6 @@ const SURVEYS = {
     title: { pt: "Pesquisa · Painelistas e moderadores", en: "Survey · Panelists and moderators" },
     audience: { pt: "Para quem participou das sessões como painelista ou moderador", en: "For those who took part in the sessions as a panelist or moderator" },
     estimate: { pt: "3 minutos", en: "3 minutes" },
-    intro: { pt: "Sugerimos um único formulário — a primeira pergunta direciona o restante.", en: "We suggest a single form — the first question determines the rest." },
     thankYou: { pt: "Obrigado pela contribuição! Seu retorno é essencial para melhorar a próxima edição.", en: "Thank you for your contribution! Your feedback is essential for improving the next edition." },
     questions: [
       { id: "q1", type: "single", text: { pt: "Qual foi sua participação no Congresso?", en: "What was your role at the Congress?" }, options: [opt("painelista", "Painelista", "Panelist"), opt("moderador", "Moderador", "Moderator")] },
@@ -124,7 +123,6 @@ const SURVEYS = {
     title: { pt: "Pesquisa · Patrocinadores e apoiadores", en: "Survey · Sponsors and supporters" },
     audience: { pt: "Para as empresas que patrocinaram as frentes do Experience", en: "For the companies that sponsored the Experience's events" },
     estimate: { pt: "3 a 4 minutos", en: "3 to 4 minutes" },
-    intro: { pt: "Esta pesquisa complementa o contato direto da equipe de patrocínios — não o substitui.", en: "This survey complements direct contact with the sponsorships team — it doesn't replace it." },
     thankYou: { pt: "Obrigado pelo apoio e pelo retorno! Vamos usar isso para preparar 2027.", en: "Thank you for your support and feedback! We'll use this to prepare for 2027." },
     questions: [
       { id: "q1", type: "multi", text: { pt: "Qual frente sua empresa patrocinou?", en: "Which event did your company sponsor?" }, options: [opt("congresso", "Congresso", "Congress"), opt("vc-day", "VC Day", "VC Day"), opt("lp-day", "LP Day", "LP Day"), opt("women-connection", "Women Connection", "Women Connection")] },
@@ -143,7 +141,6 @@ const SURVEYS = {
     title: { pt: "Pesquisa · Women Connection", en: "Survey · Women Connection" },
     audience: { pt: "Para todas as convidadas presentes", en: "For all guests who were present" },
     estimate: { pt: "2 minutos", en: "2 minutes" },
-    intro: { pt: "Evento de networking puro, sem painéis ou conteúdo programado — as perguntas focam nos encontros.", en: "A pure networking event, with no panels or scheduled content — the questions focus on the connections made." },
     thankYou: { pt: "Obrigada pela participação! Seu retorno ajuda a tornar o próximo encontro ainda melhor.", en: "Thank you for taking part! Your feedback helps make the next gathering even better." },
     questions: [
       { id: "q1", type: "nps", primary: true, text: { pt: "De 0 a 10, qual a probabilidade de você recomendar o Women Connection a uma colega?", en: "On a scale of 0 to 10, how likely are you to recommend Women Connection to a colleague?" }, anchors: { pt: ["Nada provável", "Extremamente provável"], en: ["Not at all likely", "Extremely likely"] } },

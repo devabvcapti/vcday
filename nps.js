@@ -84,6 +84,12 @@ async function npsPanelOptions() {
   return panels.filter((p) => p.id.startsWith("painel-")).map((p) => opt(p.id, p.name, p.name_en || p.name));
 }
 
+/** Os 5 paineis do VC Day (16/09) - ids nao seguem o padrao "painel-N" do Congresso, entao busca por data e inclui todos. */
+async function npsVcdayPanelOptions() {
+  const panels = await fetchPanels("2026-09-16", "2026-09-16");
+  return panels.map((p) => opt(p.id, p.name, p.name_en || p.name));
+}
+
 const SURVEYS = {
   participantes: {
     title: { pt: "Pesquisa · Participantes", en: "Survey · Attendees" },
@@ -95,6 +101,23 @@ const SURVEYS = {
       { id: "q2", type: "scale", text: { pt: "Como você avalia o Congresso de forma geral?", en: "How would you rate the Congress overall?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
       { id: "q3", type: "scale", text: { pt: "Como você avalia a qualidade do conteúdo dos painéis?", en: "How would you rate the quality of the panel content?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
       { id: "q4", type: "multi", text: { pt: "Quais painéis foram os mais relevantes para você?", en: "Which panels were most relevant to you?" }, hint: { pt: "Escolha até 3.", en: "Choose up to 3." }, maxSelect: 3, optionsSource: "panels" },
+      { id: "q5", type: "single", text: { pt: "Quantas conversas profissionalmente relevantes você teve durante o evento?", en: "How many professionally relevant conversations did you have during the event?" }, options: FREQ_OPTIONS },
+      { id: "q6", type: "single", text: { pt: "Alguma dessas conversas deve evoluir para negócio, parceria ou investimento?", en: "Do you expect any of these conversations to turn into business, a partnership, or an investment?" }, options: DEAL_PROGRESS_OPTIONS },
+      { id: "q7", type: "scale", text: { pt: "Como você avalia a estrutura do evento — local, sinalização, alimentação e credenciamento?", en: "How would you rate the event's logistics — venue, signage, catering, and check-in?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
+      { id: "q8", type: "single", text: { pt: "Você pretende participar da edição de 2027?", en: "Do you plan to attend the 2027 edition?" }, options: ATTEND_2027_OPTIONS },
+      { id: "q9", type: "text", text: { pt: "O que mais funcionou e o que faríamos diferente?", en: "What worked best, and what would you do differently?" }, optional: true },
+    ],
+  },
+  "participantes-vcday": {
+    title: { pt: "Pesquisa · Participantes VC Day", en: "Survey · VC Day Attendees" },
+    audience: { pt: "Para todos os inscritos presentes", en: "For all registered attendees who were present" },
+    estimate: { pt: "2 a 3 minutos", en: "2 to 3 minutes" },
+    thankYou: { pt: "Obrigado pela participação! Suas respostas vão ajudar a moldar a próxima edição.", en: "Thank you for taking part! Your answers will help shape the next edition." },
+    questions: [
+      { id: "q1", type: "nps", primary: true, text: { pt: "De 0 a 10, qual a probabilidade de você recomendar o VC Day ABVCAP a um colega?", en: "On a scale of 0 to 10, how likely are you to recommend the ABVCAP VC Day to a colleague?" }, anchors: { pt: ["Nada provável", "Extremamente provável"], en: ["Not at all likely", "Extremely likely"] } },
+      { id: "q2", type: "scale", text: { pt: "Como você avalia o Congresso de forma geral?", en: "How would you rate the Congress overall?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
+      { id: "q3", type: "scale", text: { pt: "Como você avalia a qualidade do conteúdo dos painéis?", en: "How would you rate the quality of the panel content?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
+      { id: "q4", type: "multi", text: { pt: "Quais painéis foram os mais relevantes para você?", en: "Which panels were most relevant to you?" }, hint: { pt: "Escolha até 3.", en: "Choose up to 3." }, maxSelect: 3, optionsSource: "vcday-panels" },
       { id: "q5", type: "single", text: { pt: "Quantas conversas profissionalmente relevantes você teve durante o evento?", en: "How many professionally relevant conversations did you have during the event?" }, options: FREQ_OPTIONS },
       { id: "q6", type: "single", text: { pt: "Alguma dessas conversas deve evoluir para negócio, parceria ou investimento?", en: "Do you expect any of these conversations to turn into business, a partnership, or an investment?" }, options: DEAL_PROGRESS_OPTIONS },
       { id: "q7", type: "scale", text: { pt: "Como você avalia a estrutura do evento — local, sinalização, alimentação e credenciamento?", en: "How would you rate the event's logistics — venue, signage, catering, and check-in?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
@@ -347,10 +370,12 @@ async function renderSurvey(surveyKey, rootId) {
   root.innerHTML = `<div class="card" style="padding: 18px; color: var(--ink-faint);">${escapeHtml(ns("loading"))}</div>`;
 
   const needsPanels = survey.questions.some((q) => q.optionsSource === "panels");
+  const needsVcdayPanels = survey.questions.some((q) => q.optionsSource === "vcday-panels");
   const panelOptions = needsPanels ? await npsPanelOptions() : null;
+  const vcdayPanelOptions = needsVcdayPanels ? await npsVcdayPanelOptions() : null;
 
   const questionsHtml = survey.questions
-    .map((q, i) => renderQuestionHtml(q, i + 1, q.optionsSource === "panels" ? panelOptions : null))
+    .map((q, i) => renderQuestionHtml(q, i + 1, q.optionsSource === "panels" ? panelOptions : q.optionsSource === "vcday-panels" ? vcdayPanelOptions : null))
     .join("");
 
   root.innerHTML = `

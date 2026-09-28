@@ -151,15 +151,20 @@
         return { avg: scores.reduce((a, b) => a + b, 0) / scores.length, total: scores.length };
       }
 
-      function computeChoiceCounts(responses, qid) {
+      // Agrupa pelo rotulo ja resolvido (nao pelo valor bruto): respostas antigas, gravadas
+      // antes do bilingue existir, guardavam o rotulo em portugues direto como valor; as novas
+      // guardam um valor canonico (ex.: "nenhuma"). Sem essa normalizacao, a mesma resposta real
+      // vira duas barras separadas no grafico.
+      function computeChoiceCounts(responses, q) {
         const counts = {};
         let total = 0;
         responses.forEach((r) => {
-          const val = r.answers[qid];
+          const val = r.answers[q.id];
           if (val === undefined) return;
           total++;
           (Array.isArray(val) ? val : [val]).forEach((v) => {
-            counts[v] = (counts[v] || 0) + 1;
+            const label = resolveChoiceLabel(q, v);
+            counts[label] = (counts[label] || 0) + 1;
           });
         });
         return { counts, total };
@@ -211,7 +216,7 @@
         }
 
         if (q.type === "single" || q.type === "multi") {
-          const { counts, total } = computeChoiceCounts(responses, q.id);
+          const { counts, total } = computeChoiceCounts(responses, q);
           if (!total) {
             return `<div class="card stat-card"><div class="stat-q">${escapeHtml(q.text.pt)}</div><p class="stat-empty">Sem respostas ainda.</p></div>`;
           }
@@ -220,7 +225,7 @@
           return `
             <div class="card stat-card">
               <div class="stat-q">${escapeHtml(q.text.pt)}</div>
-              ${entries.map(([value, count]) => barRow(resolveChoiceLabel(q, value), count, total, maxCount)).join("")}
+              ${entries.map(([label, count]) => barRow(label, count, total, maxCount)).join("")}
               <div class="score-count">${total} resposta${total === 1 ? "" : "s"}</div>
             </div>
           `;

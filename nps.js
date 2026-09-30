@@ -1,8 +1,8 @@
 // --- Pesquisas NPS pos-evento -------------------------------------------
 // Motor generico: cada pesquisa e uma lista de perguntas (SURVEYS abaixo),
 // renderizada/validada/enviada pelo mesmo codigo, para nao duplicar HTML/JS
-// entre as 4 pesquisas (Participantes, Painelistas e Moderadores,
-// Patrocinadores e Apoiadores, Women Connection). Depende de app.js (sb,
+// entre as pesquisas (Participantes, Participantes VC Day, Painelistas e
+// Moderadores, Patrocinadores e Apoiadores). Depende de app.js (sb,
 // escapeHtml, getLang, fetchPanels, panelName, renderLangToggle).
 //
 // Bilingue (PT/EN), exceto o dashboard (nps-dashboard.html), que fica
@@ -162,23 +162,6 @@ const SURVEYS = {
       { id: "q8", type: "scale", text: { pt: "Como você avalia o relacionamento com a equipe da ABVCAP ao longo do processo?", en: "How would you rate your relationship with the ABVCAP team throughout the process?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
       { id: "q9", type: "text", text: { pt: "Que contrapartida faria diferença em 2027 e hoje não existe?", en: "What benefit would make a difference in 2027 that doesn't exist today?" }, optional: true },
       { id: "q10", type: "text", text: { pt: "Algum comentário ou sugestão?", en: "Any comments or suggestions?" }, optional: true },
-    ],
-  },
-  "women-connection": {
-    title: { pt: "Pesquisa · Women Connection", en: "Survey · Women Connection" },
-    audience: { pt: "Para todas as convidadas presentes", en: "For all guests who were present" },
-    estimate: { pt: "2 minutos", en: "2 minutes" },
-    thankYou: { pt: "Obrigada pela participação! Seu retorno ajuda a tornar o próximo encontro ainda melhor.", en: "Thank you for taking part! Your feedback helps make the next gathering even better." },
-    questions: [
-      { id: "q1", type: "nps", primary: true, text: { pt: "De 0 a 10, qual a probabilidade de você recomendar o Women Connection a uma colega?", en: "On a scale of 0 to 10, how likely are you to recommend Women Connection to a colleague?" }, anchors: { pt: ["Nada provável", "Extremamente provável"], en: ["Not at all likely", "Extremely likely"] } },
-      { id: "q2", type: "scale", text: { pt: "Como você avalia o encontro de forma geral?", en: "How would you rate the gathering overall?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
-      { id: "q3", type: "single", text: { pt: "Quantas conversas profissionalmente relevantes você teve?", en: "How many professionally relevant conversations did you have?" }, options: FREQ_OPTIONS },
-      { id: "q4", type: "single", text: { pt: "Quantas pessoas que você não conhecia antes você conheceu?", en: "How many people did you meet that you didn't know before?" }, options: FREQ_OPTIONS },
-      { id: "q5", type: "single", text: { pt: "Alguma dessas conversas deve evoluir para negócio, parceria ou oportunidade profissional?", en: "Do you expect any of these conversations to turn into business, a partnership, or a professional opportunity?" }, options: DEAL_PROGRESS_OPTIONS },
-      { id: "q6", type: "single", text: { pt: "O formato do encontro favoreceu as conexões?", en: "Did the format of the gathering encourage connections?" }, options: [opt("sim-plenamente", "Sim, plenamente", "Yes, fully"), opt("sim-em-parte", "Sim, em parte", "Yes, partly"), opt("nao-muito", "Não muito — faltou dinâmica que estimulasse a circulação", "Not really — it lacked activities that encouraged mingling"), opt("nao", "Não", "No")] },
-      { id: "q7", type: "single", text: { pt: "Como você avalia a duração e o tamanho do grupo?", en: "How would you rate the length of the event and the size of the group?" }, options: [opt("ambos-adequados", "Ambos adequados", "Both were adequate"), opt("tempo-curto", "O tempo foi curto", "The time was too short"), opt("grupo-maior", "O grupo poderia ser maior", "The group could have been larger"), opt("grupo-menor", "O grupo poderia ser menor", "The group could have been smaller")] },
-      { id: "q8", type: "single", text: { pt: "Você pretende participar em 2027?", en: "Do you plan to attend in 2027?" }, options: ATTEND_2027_OPTIONS },
-      { id: "q9", type: "text", text: { pt: "O que tornaria o encontro mais produtivo para você?", en: "What would make the gathering more productive for you?" }, optional: true },
     ],
   },
 };

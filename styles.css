@@ -332,7 +332,7 @@ textarea:focus, input[type="text"]:focus, input[type="email"]:focus {
   .panel-row .time { min-width: 0; }
 }
 
-/* --- Pesquisas NPS pos-evento (Congresso, Painelistas, Patrocinadores, Women Connection) --- */
+/* --- Pesquisas NPS pos-evento (Congresso, VC Day, Painelistas, Patrocinadores) --- */
 .nps-question { margin-bottom: 26px; }
 .nps-question .q-text {
   font-size: 15px;

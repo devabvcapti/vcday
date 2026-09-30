@@ -152,7 +152,7 @@ const SURVEYS = {
     estimate: { pt: "3 a 4 minutos", en: "3 to 4 minutes" },
     thankYou: { pt: "Obrigado pelo apoio e pelo retorno! Vamos usar isso para preparar 2027.", en: "Thank you for your support and feedback! We'll use this to prepare for 2027." },
     questions: [
-      { id: "q1", type: "multi", text: { pt: "Qual frente sua empresa patrocinou?", en: "Which event did your company sponsor?" }, options: [opt("congresso", "Congresso", "Congress"), opt("vc-day", "VC Day", "VC Day"), opt("lp-day", "LP Day", "LP Day"), opt("women-connection", "Women Connection", "Women Connection")] },
+      { id: "q1", type: "multi", text: { pt: "Qual frente sua empresa patrocinou?", en: "Which event did your company sponsor?" }, options: [opt("congresso", "Congresso", "Congress"), opt("vc-day", "VC Day", "VC Day"), opt("lp-day", "LP Day", "LP Day")] },
       { id: "q2", type: "nps", primary: true, text: { pt: "De 0 a 10, qual a probabilidade de sua empresa patrocinar o Experience em 2027?", en: "On a scale of 0 to 10, how likely is your company to sponsor the Experience in 2027?" }, anchors: { pt: ["Nada provável", "Extremamente provável"], en: ["Not at all likely", "Extremely likely"] } },
       { id: "q3", type: "scale", text: { pt: "Como você avalia o retorno obtido frente ao investimento?", en: "How would you rate the return on your investment?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
       { id: "q4", type: "scale", text: { pt: "Como você avalia a visibilidade da marca durante o evento?", en: "How would you rate your brand's visibility during the event?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },

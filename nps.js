@@ -98,8 +98,8 @@ const SURVEYS = {
     thankYou: { pt: "Obrigado pela participação! Suas respostas vão ajudar a moldar a próxima edição.", en: "Thank you for taking part! Your answers will help shape the next edition." },
     questions: [
       { id: "nome", type: "short", text: { pt: "Nome", en: "Name" }, optional: true, hint: { pt: "Deixe seu nome e e-mail (opcional) para ter acesso a um cupom de desconto na próxima edição.", en: "Leave your name and email (optional) to get access to a discount coupon on the next edition." } },
-      { id: "email", type: "short", inputType: "email", text: { pt: "E-mail", en: "Email" }, placeholder: { pt: "seu@email.com", en: "you@email.com" }, hint: { pt: "Obrigatório se você preencher o nome acima.", en: "Required if you fill in your name above." }, showIf: { q: "nome", filled: true }, requiredIf: { q: "nome" } },
-      { id: "consentimento", type: "consent", text: { pt: "Autorização de uso de dados (LGPD)", en: "Data usage consent (LGPD)" }, consentLabel: { pt: "Autorizo a ABVCAP a utilizar meu nome e e-mail para envio do cupom de desconto e comunicações sobre a próxima edição, conforme a Lei Geral de Proteção de Dados (LGPD).", en: "I authorize ABVCAP to use my name and email to send the discount coupon and related communications about the next edition, in accordance with Brazil's General Data Protection Law (LGPD)." }, showIf: { q: "nome", filled: true }, requiredIf: { q: "nome" } },
+      { id: "email", type: "short", inputType: "email", text: { pt: "E-mail", en: "Email" }, placeholder: { pt: "seu@email.com", en: "you@email.com" }, hint: { pt: "Obrigatório se você preencher o nome acima.", en: "Required if you fill in your name above." }, showIf: { q: "nome", filled: true }, requiredIf: { q: "nome" }, numberLabel: "1.1" },
+      { id: "consentimento", type: "consent", text: { pt: "Autorização de uso de dados (LGPD)", en: "Data usage consent (LGPD)" }, consentLabel: { pt: "Autorizo a ABVCAP a utilizar meu nome e e-mail para envio do cupom de desconto e comunicações sobre a próxima edição, conforme a Lei Geral de Proteção de Dados (LGPD).", en: "I authorize ABVCAP to use my name and email to send the discount coupon and related communications about the next edition, in accordance with Brazil's General Data Protection Law (LGPD)." }, showIf: { q: "nome", filled: true }, requiredIf: { q: "nome" }, numberLabel: "1.2" },
       { id: "q1", type: "nps", primary: true, text: { pt: "De 0 a 10, qual a probabilidade de você recomendar o Congresso ABVCAP a um colega?", en: "On a scale of 0 to 10, how likely are you to recommend the ABVCAP Congress to a colleague?" }, anchors: { pt: ["Nada provável", "Extremamente provável"], en: ["Not at all likely", "Extremely likely"] } },
       { id: "q2", type: "scale", text: { pt: "Como você avalia o Congresso de forma geral?", en: "How would you rate the Congress overall?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
       { id: "q3", type: "scale", text: { pt: "Como você avalia a qualidade do conteúdo dos painéis?", en: "How would you rate the quality of the panel content?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
@@ -118,8 +118,8 @@ const SURVEYS = {
     thankYou: { pt: "Obrigado pela participação! Suas respostas vão ajudar a moldar a próxima edição.", en: "Thank you for taking part! Your answers will help shape the next edition." },
     questions: [
       { id: "nome", type: "short", text: { pt: "Nome", en: "Name" }, optional: true, hint: { pt: "Deixe seu nome e e-mail (opcional) para ter acesso a um cupom de desconto na próxima edição.", en: "Leave your name and email (optional) to get access to a discount coupon on the next edition." } },
-      { id: "email", type: "short", inputType: "email", text: { pt: "E-mail", en: "Email" }, placeholder: { pt: "seu@email.com", en: "you@email.com" }, hint: { pt: "Obrigatório se você preencher o nome acima.", en: "Required if you fill in your name above." }, showIf: { q: "nome", filled: true }, requiredIf: { q: "nome" } },
-      { id: "consentimento", type: "consent", text: { pt: "Autorização de uso de dados (LGPD)", en: "Data usage consent (LGPD)" }, consentLabel: { pt: "Autorizo a ABVCAP a utilizar meu nome e e-mail para envio do cupom de desconto e comunicações sobre a próxima edição, conforme a Lei Geral de Proteção de Dados (LGPD).", en: "I authorize ABVCAP to use my name and email to send the discount coupon and related communications about the next edition, in accordance with Brazil's General Data Protection Law (LGPD)." }, showIf: { q: "nome", filled: true }, requiredIf: { q: "nome" } },
+      { id: "email", type: "short", inputType: "email", text: { pt: "E-mail", en: "Email" }, placeholder: { pt: "seu@email.com", en: "you@email.com" }, hint: { pt: "Obrigatório se você preencher o nome acima.", en: "Required if you fill in your name above." }, showIf: { q: "nome", filled: true }, requiredIf: { q: "nome" }, numberLabel: "1.1" },
+      { id: "consentimento", type: "consent", text: { pt: "Autorização de uso de dados (LGPD)", en: "Data usage consent (LGPD)" }, consentLabel: { pt: "Autorizo a ABVCAP a utilizar meu nome e e-mail para envio do cupom de desconto e comunicações sobre a próxima edição, conforme a Lei Geral de Proteção de Dados (LGPD).", en: "I authorize ABVCAP to use my name and email to send the discount coupon and related communications about the next edition, in accordance with Brazil's General Data Protection Law (LGPD)." }, showIf: { q: "nome", filled: true }, requiredIf: { q: "nome" }, numberLabel: "1.2" },
       { id: "q1", type: "nps", primary: true, text: { pt: "De 0 a 10, qual a probabilidade de você recomendar o VC Day ABVCAP a um colega?", en: "On a scale of 0 to 10, how likely are you to recommend the ABVCAP VC Day to a colleague?" }, anchors: { pt: ["Nada provável", "Extremamente provável"], en: ["Not at all likely", "Extremely likely"] } },
       { id: "q2", type: "scale", text: { pt: "Como você avalia o Congresso de forma geral?", en: "How would you rate the Congress overall?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
       { id: "q3", type: "scale", text: { pt: "Como você avalia a qualidade do conteúdo dos painéis?", en: "How would you rate the quality of the panel content?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
@@ -398,8 +398,15 @@ async function renderSurvey(surveyKey, rootId) {
   const panelOptions = needsPanels ? await npsPanelOptions() : null;
   const vcdayPanelOptions = needsVcdayPanels ? await npsVcdayPanelOptions() : null;
 
+  // Perguntas com numberLabel (ex.: "1.1") usam esse rotulo fixo em vez do
+  // contador sequencial, e nao consomem um numero - assim nome/email/consentimento
+  // aparecem como 1 / 1.1 / 1.2 e a proxima pergunta continua em 2, nao em 4.
+  let questionCounter = 0;
   const questionsHtml = survey.questions
-    .map((q, i) => renderQuestionHtml(q, i + 1, q.optionsSource === "panels" ? panelOptions : q.optionsSource === "vcday-panels" ? vcdayPanelOptions : null))
+    .map((q) => {
+      const displayIndex = q.numberLabel || String(++questionCounter);
+      return renderQuestionHtml(q, displayIndex, q.optionsSource === "panels" ? panelOptions : q.optionsSource === "vcday-panels" ? vcdayPanelOptions : null);
+    })
     .join("");
 
   root.innerHTML = `

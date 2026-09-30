@@ -41,7 +41,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=21"></script>
+  <script src="app.js?v=22"></script>
   <script>
     (async function () {
       document.documentElement.lang = getLang() === "en" ? "en" : "pt-BR";
@@ -52,6 +52,16 @@
       document.getElementById("evaluate-event-link").textContent = t("evaluateEvent");
       document.getElementById("footer-link").textContent = t("eventName");
       document.title = `${document.title.split(" · ")[0]} · ${t("eventName")}`;
+
+      if (!LIVE_EVENT_ACTIVE) {
+        document.getElementById("hub-eyebrow").textContent = t("noLiveEventEyebrow");
+        document.getElementById("hub-title").textContent = t("noLiveEventTitle");
+        document.getElementById("hub-subtitle").textContent = t("noLiveEventSubtitle");
+        document.getElementById("day-tabs").style.display = "none";
+        document.getElementById("panels").style.display = "none";
+        document.getElementById("evaluate-event-link").style.display = "none";
+        return;
+      }
 
       const panels = await fetchPanels();
       const nowMin = nowMinutesSaoPaulo();

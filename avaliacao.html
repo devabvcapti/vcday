@@ -80,7 +80,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=21"></script>
+  <script src="app.js?v=22"></script>
   <script>
     (async function () {
       document.documentElement.lang = getLang() === "en" ? "en" : "pt-BR";
@@ -105,6 +105,14 @@
       document.getElementById("rating-hint").textContent = t("tapAStar");
       document.getElementById("success-title").textContent = t("thankYouEvaluation");
       document.getElementById("success-text").textContent = t("evaluateEventSuccessText");
+
+      if (!LIVE_EVENT_ACTIVE) {
+        document.getElementById("context-eyebrow").textContent = t("noLiveEventEyebrow");
+        document.getElementById("context-title").textContent = t("noLiveEventTitle");
+        document.getElementById("context-subtitle").textContent = t("noLiveEventSubtitle");
+        document.getElementById("form-card").style.display = "none";
+        return;
+      }
 
       const panelId = qs("p");
       let panel = null;

@@ -15,6 +15,13 @@ const EVENT_SLUG = "congresso-2026";
 const CURRENT_EVENT_START_DATE = "2026-09-22";
 const CURRENT_EVENT_END_DATE = "2026-09-23";
 
+// Controla se o hub/pergunta/avaliacao mostram o fluxo normal (lista de
+// paineis, envio de pergunta, avaliacao) ou uma tela de "nenhum evento ao
+// vivo". Deixar false entre eventos (perguntas/avaliacoes do evento anterior
+// ja encerradas) e virar true de novo quando o proximo evento for cadastrado
+// (junto com CURRENT_EVENT_START_DATE/END_DATE e EVENT_SLUG acima).
+const LIVE_EVENT_ACTIVE = false;
+
 // Historico de eventos ja rodados neste site (nao vem de uma tabela - e so
 // para a moderacao poder trocar de evento e revisar perguntas/avaliacoes
 // antigas). Adicionar uma linha aqui a cada evento novo, mantendo as
@@ -233,6 +240,9 @@ const I18N = {
     yourName: "Seu nome",
     yourNamePlaceholder: "Ex.: Maria Silva",
     sendEvaluation: "Enviar avaliação",
+    noLiveEventEyebrow: "ABVCAP",
+    noLiveEventTitle: "Nenhum evento ao vivo no momento",
+    noLiveEventSubtitle: "O Congresso ABVCAP 2026 já foi encerrado e não está mais recebendo perguntas ou avaliações. Acompanhe o site da ABVCAP para novidades sobre os próximos eventos.",
   },
   en: {
     eventName: "ABVCAP Congress 2026",
@@ -293,6 +303,9 @@ const I18N = {
     yourName: "Your name",
     yourNamePlaceholder: "E.g.: Maria Silva",
     sendEvaluation: "Send rating",
+    noLiveEventEyebrow: "ABVCAP",
+    noLiveEventTitle: "No live event right now",
+    noLiveEventSubtitle: "ABVCAP Congress 2026 has ended and is no longer accepting questions or ratings. Follow the ABVCAP website for news about upcoming events.",
   },
 };
 

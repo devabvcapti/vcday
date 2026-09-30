@@ -55,7 +55,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=21"></script>
+  <script src="app.js?v=22"></script>
   <script>
     (async function () {
       document.documentElement.lang = getLang() === "en" ? "en" : "pt-BR";
@@ -73,6 +73,16 @@
       document.getElementById("back-link").textContent = t("footerHome");
       document.getElementById("panel-time").textContent = t("eventName");
       document.title = `${document.title.split(" · ")[0]} · ${t("eventName")}`;
+
+      if (!LIVE_EVENT_ACTIVE) {
+        document.getElementById("panel-time").textContent = t("noLiveEventEyebrow");
+        document.getElementById("panel-name").textContent = t("noLiveEventTitle");
+        const speakersEl = document.getElementById("panel-speakers");
+        speakersEl.textContent = t("noLiveEventSubtitle");
+        speakersEl.style.display = "block";
+        document.getElementById("form-card").style.display = "none";
+        return;
+      }
 
       const panelId = qs("p");
       const nameEl = document.getElementById("panel-name");

@@ -97,6 +97,8 @@ const SURVEYS = {
     estimate: { pt: "2 a 3 minutos", en: "2 to 3 minutes" },
     thankYou: { pt: "Obrigado pela participação! Suas respostas vão ajudar a moldar a próxima edição.", en: "Thank you for taking part! Your answers will help shape the next edition." },
     questions: [
+      { id: "nome", type: "short", text: { pt: "Nome", en: "Name" }, optional: true, hint: { pt: "Deixe seu nome e e-mail (opcional) para concorrer a um cupom de desconto na próxima edição.", en: "Leave your name and email (optional) to be eligible for a discount coupon on the next edition." } },
+      { id: "email", type: "short", inputType: "email", text: { pt: "E-mail", en: "Email" }, optional: true, placeholder: { pt: "seu@email.com", en: "you@email.com" } },
       { id: "q1", type: "nps", primary: true, text: { pt: "De 0 a 10, qual a probabilidade de você recomendar o Congresso ABVCAP a um colega?", en: "On a scale of 0 to 10, how likely are you to recommend the ABVCAP Congress to a colleague?" }, anchors: { pt: ["Nada provável", "Extremamente provável"], en: ["Not at all likely", "Extremely likely"] } },
       { id: "q2", type: "scale", text: { pt: "Como você avalia o Congresso de forma geral?", en: "How would you rate the Congress overall?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
       { id: "q3", type: "scale", text: { pt: "Como você avalia a qualidade do conteúdo dos painéis?", en: "How would you rate the quality of the panel content?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
@@ -106,8 +108,6 @@ const SURVEYS = {
       { id: "q7", type: "scale", text: { pt: "Como você avalia a estrutura do evento — local, sinalização, alimentação e credenciamento?", en: "How would you rate the event's logistics — venue, signage, catering, and check-in?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
       { id: "q8", type: "single", text: { pt: "Você pretende participar da edição de 2027?", en: "Do you plan to attend the 2027 edition?" }, options: ATTEND_2027_OPTIONS },
       { id: "q9", type: "text", text: { pt: "O que mais funcionou e o que faríamos diferente?", en: "What worked best, and what would you do differently?" }, optional: true },
-      { id: "nome", type: "short", text: { pt: "Nome", en: "Name" }, optional: true, hint: { pt: "Deixe seu nome e e-mail (opcional) para concorrer a um cupom de desconto na próxima edição.", en: "Leave your name and email (optional) to be eligible for a discount coupon on the next edition." } },
-      { id: "email", type: "short", inputType: "email", text: { pt: "E-mail", en: "Email" }, optional: true, placeholder: { pt: "seu@email.com", en: "you@email.com" } },
     ],
   },
   "participantes-vcday": {
@@ -116,6 +116,8 @@ const SURVEYS = {
     estimate: { pt: "2 a 3 minutos", en: "2 to 3 minutes" },
     thankYou: { pt: "Obrigado pela participação! Suas respostas vão ajudar a moldar a próxima edição.", en: "Thank you for taking part! Your answers will help shape the next edition." },
     questions: [
+      { id: "nome", type: "short", text: { pt: "Nome", en: "Name" }, optional: true, hint: { pt: "Deixe seu nome e e-mail (opcional) para concorrer a um cupom de desconto na próxima edição.", en: "Leave your name and email (optional) to be eligible for a discount coupon on the next edition." } },
+      { id: "email", type: "short", inputType: "email", text: { pt: "E-mail", en: "Email" }, optional: true, placeholder: { pt: "seu@email.com", en: "you@email.com" } },
       { id: "q1", type: "nps", primary: true, text: { pt: "De 0 a 10, qual a probabilidade de você recomendar o VC Day ABVCAP a um colega?", en: "On a scale of 0 to 10, how likely are you to recommend the ABVCAP VC Day to a colleague?" }, anchors: { pt: ["Nada provável", "Extremamente provável"], en: ["Not at all likely", "Extremely likely"] } },
       { id: "q2", type: "scale", text: { pt: "Como você avalia o Congresso de forma geral?", en: "How would you rate the Congress overall?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
       { id: "q3", type: "scale", text: { pt: "Como você avalia a qualidade do conteúdo dos painéis?", en: "How would you rate the quality of the panel content?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
@@ -125,8 +127,6 @@ const SURVEYS = {
       { id: "q7", type: "scale", text: { pt: "Como você avalia a estrutura do evento — local, sinalização, alimentação e credenciamento?", en: "How would you rate the event's logistics — venue, signage, catering, and check-in?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
       { id: "q8", type: "single", text: { pt: "Você pretende participar da edição de 2027?", en: "Do you plan to attend the 2027 edition?" }, options: ATTEND_2027_OPTIONS },
       { id: "q9", type: "text", text: { pt: "O que mais funcionou e o que faríamos diferente?", en: "What worked best, and what would you do differently?" }, optional: true },
-      { id: "nome", type: "short", text: { pt: "Nome", en: "Name" }, optional: true, hint: { pt: "Deixe seu nome e e-mail (opcional) para concorrer a um cupom de desconto na próxima edição.", en: "Leave your name and email (optional) to be eligible for a discount coupon on the next edition." } },
-      { id: "email", type: "short", inputType: "email", text: { pt: "E-mail", en: "Email" }, optional: true, placeholder: { pt: "seu@email.com", en: "you@email.com" } },
     ],
   },
   "painelistas-moderadores": {

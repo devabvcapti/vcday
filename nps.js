@@ -106,6 +106,8 @@ const SURVEYS = {
       { id: "q7", type: "scale", text: { pt: "Como você avalia a estrutura do evento — local, sinalização, alimentação e credenciamento?", en: "How would you rate the event's logistics — venue, signage, catering, and check-in?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
       { id: "q8", type: "single", text: { pt: "Você pretende participar da edição de 2027?", en: "Do you plan to attend the 2027 edition?" }, options: ATTEND_2027_OPTIONS },
       { id: "q9", type: "text", text: { pt: "O que mais funcionou e o que faríamos diferente?", en: "What worked best, and what would you do differently?" }, optional: true },
+      { id: "nome", type: "short", text: { pt: "Nome", en: "Name" }, optional: true, hint: { pt: "Deixe seu nome e e-mail (opcional) para concorrer a um cupom de desconto na próxima edição.", en: "Leave your name and email (optional) to be eligible for a discount coupon on the next edition." } },
+      { id: "email", type: "short", inputType: "email", text: { pt: "E-mail", en: "Email" }, optional: true, placeholder: { pt: "seu@email.com", en: "you@email.com" } },
     ],
   },
   "participantes-vcday": {
@@ -123,6 +125,8 @@ const SURVEYS = {
       { id: "q7", type: "scale", text: { pt: "Como você avalia a estrutura do evento — local, sinalização, alimentação e credenciamento?", en: "How would you rate the event's logistics — venue, signage, catering, and check-in?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
       { id: "q8", type: "single", text: { pt: "Você pretende participar da edição de 2027?", en: "Do you plan to attend the 2027 edition?" }, options: ATTEND_2027_OPTIONS },
       { id: "q9", type: "text", text: { pt: "O que mais funcionou e o que faríamos diferente?", en: "What worked best, and what would you do differently?" }, optional: true },
+      { id: "nome", type: "short", text: { pt: "Nome", en: "Name" }, optional: true, hint: { pt: "Deixe seu nome e e-mail (opcional) para concorrer a um cupom de desconto na próxima edição.", en: "Leave your name and email (optional) to be eligible for a discount coupon on the next edition." } },
+      { id: "email", type: "short", inputType: "email", text: { pt: "E-mail", en: "Email" }, optional: true, placeholder: { pt: "seu@email.com", en: "you@email.com" } },
     ],
   },
   "painelistas-moderadores": {
@@ -201,6 +205,9 @@ function renderQuestionHtml(q, index, dynamicOptions) {
       .join("")}</div>`;
   } else if (q.type === "text") {
     body = `<textarea data-qid="${q.id}" rows="3" maxlength="600" placeholder="${escapeHtml(ns("writeHere"))}"></textarea>`;
+  } else if (q.type === "short") {
+    const inputType = q.inputType === "email" ? "email" : "text";
+    body = `<input type="${inputType}" data-qid="${q.id}" maxlength="200" placeholder="${q.placeholder ? escapeHtml(tr(q.placeholder)) : ""}" />`;
   }
 
   return `
@@ -299,6 +306,9 @@ function collectAnswers(root, survey) {
       answers[q.id] = checked;
     } else if (q.type === "text") {
       const value = root.querySelector(`textarea[data-qid="${q.id}"]`).value.trim();
+      if (value) answers[q.id] = value;
+    } else if (q.type === "short") {
+      const value = root.querySelector(`input[data-qid="${q.id}"]`).value.trim();
       if (value) answers[q.id] = value;
     }
   });

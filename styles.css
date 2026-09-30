@@ -297,7 +297,7 @@ label {
   margin-bottom: 6px;
 }
 
-textarea, input[type="text"] {
+textarea, input[type="text"], input[type="email"] {
   width: 100%;
   font-family: inherit;
   font-size: 16px;
@@ -309,7 +309,7 @@ textarea, input[type="text"] {
   resize: vertical;
 }
 
-textarea:focus, input[type="text"]:focus {
+textarea:focus, input[type="text"]:focus, input[type="email"]:focus {
   outline: 2px solid var(--verde);
   outline-offset: 1px;
 }

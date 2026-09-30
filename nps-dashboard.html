@@ -12,7 +12,7 @@
   <link rel="apple-touch-icon" href="assets/favicon-180.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" />
-  <link rel="stylesheet" href="styles.css?v=14" />
+  <link rel="stylesheet" href="styles.css?v=15" />
   <style>
     .wrap-wide { max-width: 860px; margin-inline: auto; padding-block: 28px 64px; }
     #login-card { max-width: 360px; margin: 15vh auto 0; padding: 26px; text-align: center; }
@@ -91,7 +91,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="app.js?v=21"></script>
-  <script src="nps.js?v=4"></script>
+  <script src="nps.js?v=5"></script>
   <script>
     (function () {
       let passcode = sessionStorage.getItem("vcday_mod_passcode") || "";
@@ -248,6 +248,26 @@
         return "";
       }
 
+      function renderContactsCard(survey, responses) {
+        if (!survey.questions.some((q) => q.id === "nome" || q.id === "email")) return "";
+        const contacts = responses
+          .map((r) => ({ nome: (r.answers.nome || "").trim(), email: (r.answers.email || "").trim() }))
+          .filter((c) => c.nome || c.email);
+        if (!contacts.length) {
+          return `<div class="card stat-card"><div class="stat-q">Contatos para cupom de desconto</div><p class="stat-empty">Ninguém se identificou ainda.</p></div>`;
+        }
+        const emailList = contacts.map((c) => c.email).filter(Boolean).join(", ");
+        return `
+          <div class="card stat-card">
+            <div class="stat-q">Contatos para cupom de desconto <span class="stat-empty">(${contacts.length})</span></div>
+            <div class="text-answers">
+              ${contacts.map((c) => `<div class="text-answer">${escapeHtml(c.nome || "(sem nome)")}${c.email ? ` — ${escapeHtml(c.email)}` : ""}</div>`).join("")}
+            </div>
+            ${emailList ? `<button type="button" class="btn btn-ghost" id="copy-emails-btn" data-emails="${escapeHtml(emailList)}" style="margin-top:10px;">Copiar e-mails</button>` : ""}
+          </div>
+        `;
+      }
+
       function renderSurveyDashboard(surveyKey) {
         const survey = SURVEYS[surveyKey];
         const responses = allResponses.filter((r) => r.survey_slug === surveyKey);
@@ -258,7 +278,16 @@
             <p class="hint">${responses.length} resposta${responses.length === 1 ? "" : "s"} recebidas</p>
           </div>
           ${survey.questions.map((q) => renderQuestionCard(q, responses)).join("")}
+          ${renderContactsCard(survey, responses)}
         `;
+        const copyBtn = document.getElementById("copy-emails-btn");
+        if (copyBtn) {
+          copyBtn.addEventListener("click", () => {
+            navigator.clipboard.writeText(copyBtn.dataset.emails);
+            copyBtn.textContent = "Copiado!";
+            setTimeout(() => { copyBtn.textContent = "Copiar e-mails"; }, 1500);
+          });
+        }
       }
 
       function renderTabs() {

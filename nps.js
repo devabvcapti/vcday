@@ -99,6 +99,7 @@ const SURVEYS = {
     questions: [
       { id: "nome", type: "short", text: { pt: "Nome", en: "Name" }, optional: true, hint: { pt: "Deixe seu nome e e-mail (opcional) para ter acesso a um cupom de desconto na próxima edição.", en: "Leave your name and email (optional) to get access to a discount coupon on the next edition." } },
       { id: "email", type: "short", inputType: "email", text: { pt: "E-mail", en: "Email" }, placeholder: { pt: "seu@email.com", en: "you@email.com" }, hint: { pt: "Obrigatório se você preencher o nome acima.", en: "Required if you fill in your name above." }, showIf: { q: "nome", filled: true }, requiredIf: { q: "nome" } },
+      { id: "consentimento", type: "consent", text: { pt: "Autorização de uso de dados (LGPD)", en: "Data usage consent (LGPD)" }, consentLabel: { pt: "Autorizo a ABVCAP a utilizar meu nome e e-mail para envio do cupom de desconto e comunicações sobre a próxima edição, conforme a Lei Geral de Proteção de Dados (LGPD).", en: "I authorize ABVCAP to use my name and email to send the discount coupon and related communications about the next edition, in accordance with Brazil's General Data Protection Law (LGPD)." }, showIf: { q: "nome", filled: true }, requiredIf: { q: "nome" } },
       { id: "q1", type: "nps", primary: true, text: { pt: "De 0 a 10, qual a probabilidade de você recomendar o Congresso ABVCAP a um colega?", en: "On a scale of 0 to 10, how likely are you to recommend the ABVCAP Congress to a colleague?" }, anchors: { pt: ["Nada provável", "Extremamente provável"], en: ["Not at all likely", "Extremely likely"] } },
       { id: "q2", type: "scale", text: { pt: "Como você avalia o Congresso de forma geral?", en: "How would you rate the Congress overall?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
       { id: "q3", type: "scale", text: { pt: "Como você avalia a qualidade do conteúdo dos painéis?", en: "How would you rate the quality of the panel content?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
@@ -118,6 +119,7 @@ const SURVEYS = {
     questions: [
       { id: "nome", type: "short", text: { pt: "Nome", en: "Name" }, optional: true, hint: { pt: "Deixe seu nome e e-mail (opcional) para ter acesso a um cupom de desconto na próxima edição.", en: "Leave your name and email (optional) to get access to a discount coupon on the next edition." } },
       { id: "email", type: "short", inputType: "email", text: { pt: "E-mail", en: "Email" }, placeholder: { pt: "seu@email.com", en: "you@email.com" }, hint: { pt: "Obrigatório se você preencher o nome acima.", en: "Required if you fill in your name above." }, showIf: { q: "nome", filled: true }, requiredIf: { q: "nome" } },
+      { id: "consentimento", type: "consent", text: { pt: "Autorização de uso de dados (LGPD)", en: "Data usage consent (LGPD)" }, consentLabel: { pt: "Autorizo a ABVCAP a utilizar meu nome e e-mail para envio do cupom de desconto e comunicações sobre a próxima edição, conforme a Lei Geral de Proteção de Dados (LGPD).", en: "I authorize ABVCAP to use my name and email to send the discount coupon and related communications about the next edition, in accordance with Brazil's General Data Protection Law (LGPD)." }, showIf: { q: "nome", filled: true }, requiredIf: { q: "nome" } },
       { id: "q1", type: "nps", primary: true, text: { pt: "De 0 a 10, qual a probabilidade de você recomendar o VC Day ABVCAP a um colega?", en: "On a scale of 0 to 10, how likely are you to recommend the ABVCAP VC Day to a colleague?" }, anchors: { pt: ["Nada provável", "Extremamente provável"], en: ["Not at all likely", "Extremely likely"] } },
       { id: "q2", type: "scale", text: { pt: "Como você avalia o Congresso de forma geral?", en: "How would you rate the Congress overall?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
       { id: "q3", type: "scale", text: { pt: "Como você avalia a qualidade do conteúdo dos painéis?", en: "How would you rate the quality of the panel content?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
@@ -191,6 +193,8 @@ function renderQuestionHtml(q, index, dynamicOptions) {
   } else if (q.type === "short") {
     const inputType = q.inputType === "email" ? "email" : "text";
     body = `<input type="${inputType}" data-qid="${q.id}" maxlength="200" placeholder="${q.placeholder ? escapeHtml(tr(q.placeholder)) : ""}" />`;
+  } else if (q.type === "consent") {
+    body = `<label class="choice-option"><input type="checkbox" data-qid="${q.id}" /><span>${escapeHtml(tr(q.consentLabel))}</span></label>`;
   }
 
   return `
@@ -312,6 +316,14 @@ function collectAnswers(root, survey) {
         return;
       }
       answers[q.id] = value;
+    } else if (q.type === "consent") {
+      const checked = root.querySelector(`input[data-qid="${q.id}"]`).checked;
+      const isRequired = q.optional === false || (q.requiredIf && !!answers[q.requiredIf.q]);
+      if (!checked) {
+        if (isRequired) { qEl.classList.add("has-error"); valid = false; }
+        return;
+      }
+      answers[q.id] = true;
     }
   });
 

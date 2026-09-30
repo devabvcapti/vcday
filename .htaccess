@@ -1,0 +1,18 @@
+# As tags <meta http-equiv="Cache-Control"> no HTML nao geram um header HTTP
+# de verdade (a maioria dos navegadores as ignora para decisao de cache), entao
+# o navegador continuava servindo a pagina antiga do cache local mesmo depois
+# de um refresh normal. Isto forca o header real:
+<IfModule mod_headers.c>
+  # Paginas HTML: sempre revalidar com o servidor, nunca servir do cache do navegador.
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+  </FilesMatch>
+
+  # JS/CSS: cache normal - toda mudanca ja vem com "?v=N" novo na tag <script>/<link>,
+  # entao o navegador busca a URL nova sozinho sem precisar invalidar nada aqui.
+  <FilesMatch "\.(js|css)$">
+    Header set Cache-Control "public, max-age=3600"
+  </FilesMatch>
+</IfModule>

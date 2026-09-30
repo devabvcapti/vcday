@@ -97,8 +97,8 @@ const SURVEYS = {
     estimate: { pt: "2 a 3 minutos", en: "2 to 3 minutes" },
     thankYou: { pt: "Obrigado pela participação! Suas respostas vão ajudar a moldar a próxima edição.", en: "Thank you for taking part! Your answers will help shape the next edition." },
     questions: [
-      { id: "nome", type: "short", text: { pt: "Nome", en: "Name" }, optional: true, hint: { pt: "Deixe seu nome e e-mail (opcional) para concorrer a um cupom de desconto na próxima edição.", en: "Leave your name and email (optional) to be eligible for a discount coupon on the next edition." } },
-      { id: "email", type: "short", inputType: "email", text: { pt: "E-mail", en: "Email" }, optional: true, placeholder: { pt: "seu@email.com", en: "you@email.com" } },
+      { id: "nome", type: "short", text: { pt: "Nome", en: "Name" }, optional: true, hint: { pt: "Deixe seu nome e e-mail (opcional) para ter acesso a um cupom de desconto na próxima edição.", en: "Leave your name and email (optional) to get access to a discount coupon on the next edition." } },
+      { id: "email", type: "short", inputType: "email", text: { pt: "E-mail", en: "Email" }, placeholder: { pt: "seu@email.com", en: "you@email.com" }, hint: { pt: "Obrigatório se você preencher o nome acima.", en: "Required if you fill in your name above." }, showIf: { q: "nome", filled: true }, requiredIf: { q: "nome" } },
       { id: "q1", type: "nps", primary: true, text: { pt: "De 0 a 10, qual a probabilidade de você recomendar o Congresso ABVCAP a um colega?", en: "On a scale of 0 to 10, how likely are you to recommend the ABVCAP Congress to a colleague?" }, anchors: { pt: ["Nada provável", "Extremamente provável"], en: ["Not at all likely", "Extremely likely"] } },
       { id: "q2", type: "scale", text: { pt: "Como você avalia o Congresso de forma geral?", en: "How would you rate the Congress overall?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
       { id: "q3", type: "scale", text: { pt: "Como você avalia a qualidade do conteúdo dos painéis?", en: "How would you rate the quality of the panel content?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
@@ -116,8 +116,8 @@ const SURVEYS = {
     estimate: { pt: "2 a 3 minutos", en: "2 to 3 minutes" },
     thankYou: { pt: "Obrigado pela participação! Suas respostas vão ajudar a moldar a próxima edição.", en: "Thank you for taking part! Your answers will help shape the next edition." },
     questions: [
-      { id: "nome", type: "short", text: { pt: "Nome", en: "Name" }, optional: true, hint: { pt: "Deixe seu nome e e-mail (opcional) para concorrer a um cupom de desconto na próxima edição.", en: "Leave your name and email (optional) to be eligible for a discount coupon on the next edition." } },
-      { id: "email", type: "short", inputType: "email", text: { pt: "E-mail", en: "Email" }, optional: true, placeholder: { pt: "seu@email.com", en: "you@email.com" } },
+      { id: "nome", type: "short", text: { pt: "Nome", en: "Name" }, optional: true, hint: { pt: "Deixe seu nome e e-mail (opcional) para ter acesso a um cupom de desconto na próxima edição.", en: "Leave your name and email (optional) to get access to a discount coupon on the next edition." } },
+      { id: "email", type: "short", inputType: "email", text: { pt: "E-mail", en: "Email" }, placeholder: { pt: "seu@email.com", en: "you@email.com" }, hint: { pt: "Obrigatório se você preencher o nome acima.", en: "Required if you fill in your name above." }, showIf: { q: "nome", filled: true }, requiredIf: { q: "nome" } },
       { id: "q1", type: "nps", primary: true, text: { pt: "De 0 a 10, qual a probabilidade de você recomendar o VC Day ABVCAP a um colega?", en: "On a scale of 0 to 10, how likely are you to recommend the ABVCAP VC Day to a colleague?" }, anchors: { pt: ["Nada provável", "Extremamente provável"], en: ["Not at all likely", "Extremely likely"] } },
       { id: "q2", type: "scale", text: { pt: "Como você avalia o Congresso de forma geral?", en: "How would you rate the Congress overall?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
       { id: "q3", type: "scale", text: { pt: "Como você avalia a qualidade do conteúdo dos painéis?", en: "How would you rate the quality of the panel content?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
@@ -255,19 +255,33 @@ function wireChoiceErrorClear(root) {
   });
 }
 
-/** Perguntas com showIf so aparecem quando a pergunta controladora tem a resposta esperada (valor canonico, nao o rotulo traduzido). */
+function wireShortErrorClear(root) {
+  root.querySelectorAll("input[data-qid]").forEach((input) => {
+    input.addEventListener("input", () => input.closest(".nps-question").classList.remove("has-error"));
+  });
+}
+
+/** Perguntas com showIf so aparecem quando a pergunta controladora tem a resposta esperada:
+ *  { equals: valor canonico } para perguntas de escolha, ou { filled: true } para pergunta
+ *  de texto/short controladora nao-vazia (ex.: campo email so aparece apos o nome ser preenchido). */
 function wireConditionalQuestions(root, survey) {
   survey.questions.forEach((q) => {
     if (!q.showIf) return;
     const target = root.querySelector(`#question-${q.id}`);
-    const controllerGroup = root.querySelector(`[data-qid="${q.showIf.q}"]`);
+    // Para { filled: true } o controlador precisa ser o <input> em si (nao o div
+    // wrapper "#question-X", que tambem carrega data-qid e seria encontrado primeiro).
+    const controllerGroup = q.showIf.filled
+      ? root.querySelector(`input[data-qid="${q.showIf.q}"]`)
+      : root.querySelector(`[data-qid="${q.showIf.q}"]`);
     if (!controllerGroup) return;
     function evaluate() {
-      const checked = controllerGroup.querySelectorAll("input:checked");
-      const matches = Array.from(checked).some((i) => i.value === q.showIf.equals);
+      const matches = q.showIf.filled
+        ? controllerGroup.value.trim().length > 0
+        : Array.from(controllerGroup.querySelectorAll("input:checked")).some((i) => i.value === q.showIf.equals);
       target.style.display = matches ? "" : "none";
     }
     controllerGroup.addEventListener("change", evaluate);
+    controllerGroup.addEventListener("input", evaluate);
     evaluate();
   });
 }
@@ -309,7 +323,12 @@ function collectAnswers(root, survey) {
       if (value) answers[q.id] = value;
     } else if (q.type === "short") {
       const value = root.querySelector(`input[data-qid="${q.id}"]`).value.trim();
-      if (value) answers[q.id] = value;
+      const isRequired = q.optional === false || (q.requiredIf && !!answers[q.requiredIf.q]);
+      if (!value) {
+        if (isRequired) { qEl.classList.add("has-error"); valid = false; }
+        return;
+      }
+      answers[q.id] = value;
     }
   });
 
@@ -403,6 +422,7 @@ async function renderSurvey(surveyKey, rootId) {
   wireScaleButtons(root);
   wireMultiMax(root);
   wireChoiceErrorClear(root);
+  wireShortErrorClear(root);
   wireConditionalQuestions(root, survey);
   wireSubmit(root, survey, surveyKey);
 }

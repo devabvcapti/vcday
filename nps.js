@@ -236,7 +236,7 @@ const SURVEYS = {
       { id: "q1", type: "short", text: { pt: "Nome", en: "Name" }, optional: false },
       { id: "q2", type: "short", text: { pt: "Gestora", en: "Fund manager" }, optional: false },
       { id: "q3", type: "short", text: { pt: "Cargo", en: "Position" }, optional: false },
-      { id: "q3b", type: "short", text: { pt: "Qual o CNPJ?", en: "What is the company's tax ID (CNPJ)?" }, placeholder: { pt: "00.000.000/0000-00", en: "00.000.000/0000-00" }, optional: true },
+      { id: "q3b", type: "short", text: { pt: "CNPJ", en: "CNPJ" }, placeholder: { pt: "00.000.000/0000-00", en: "00.000.000/0000-00" }, optional: true },
       { id: "q4", type: "single", text: { pt: "Quantas conversas profissionalmente relevantes você teve durante o evento?", en: "How many professionally relevant conversations did you have during the event?" }, options: FREQ_OPTIONS },
       { id: "q5", type: "single", text: { pt: "Quantos desses contatos eram novos para você ou para sua gestora?", en: "How many of these contacts were new to you or your fund manager?" }, options: FREQ_OPTIONS_M },
       { id: "q6", type: "multi", text: { pt: "Quais foram os principais tipos de contatos realizados?", en: "What were the main types of contacts made?" }, options: [

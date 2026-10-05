@@ -233,9 +233,9 @@ const SURVEYS = {
     estimate: { pt: "3 a 4 minutos", en: "3 to 4 minutes" },
     thankYou: { pt: "Obrigado pela participação! Suas respostas vão ajudar a melhorar as próximas edições.", en: "Thank you for taking part! Your answers will help improve future editions." },
     questions: [
-      { id: "q1", type: "short", text: { pt: "Nome", en: "Name" }, optional: true },
-      { id: "q2", type: "short", text: { pt: "Gestora", en: "Fund manager" }, optional: true },
-      { id: "q3", type: "short", text: { pt: "Cargo", en: "Position" }, optional: true },
+      { id: "q1", type: "short", text: { pt: "Nome", en: "Name" }, optional: false },
+      { id: "q2", type: "short", text: { pt: "Gestora", en: "Fund manager" }, optional: false },
+      { id: "q3", type: "short", text: { pt: "Cargo", en: "Position" }, optional: false },
       { id: "q4", type: "single", text: { pt: "Quantas conversas profissionalmente relevantes você teve durante o evento?", en: "How many professionally relevant conversations did you have during the event?" }, options: FREQ_OPTIONS },
       { id: "q5", type: "single", text: { pt: "Quantos desses contatos eram novos para você ou para sua gestora?", en: "How many of these contacts were new to you or your fund manager?" }, options: FREQ_OPTIONS_M },
       { id: "q6", type: "multi", text: { pt: "Quais foram os principais tipos de contatos realizados?", en: "What were the main types of contacts made?" }, options: [
@@ -254,7 +254,7 @@ const SURVEYS = {
         opt("ainda-nao-potencial", "Ainda não, mas há potencial", "Not yet, but there is potential"),
         opt("nao", "Não", "No"),
       ] },
-      { id: "q10", type: "text", text: { pt: "Qual a expectativa de negócios ou investimentos para os próximos 12 meses decorrentes dos contatos realizados no evento?", en: "What is your expectation for business or investments over the next 12 months resulting from the contacts made at the event?" }, hint: { pt: "Informar valor aproximado em US$ milhões, quando aplicável.", en: "Indicate an approximate value in US$ million, when applicable." }, optional: true },
+      { id: "q10", type: "text", text: { pt: "Qual a expectativa de negócios ou investimentos para os próximos 12 meses decorrentes dos contatos realizados no evento?", en: "What is your expectation for business or investments over the next 12 months resulting from the contacts made at the event?" }, hint: { pt: "Informar valor aproximado em US$ milhões, quando aplicável.", en: "Indicate an approximate value in US$ million, when applicable." }, optional: false },
       { id: "q11", type: "single", text: { pt: "Qual foi o papel da ABVCAP / programa inBrazil na geração ou no avanço dessas oportunidades?", en: "What role did ABVCAP / the inBrazil program play in generating or advancing these opportunities?" }, options: [
         opt("fundamental", "Fundamental", "Fundamental"),
         opt("relevante", "Relevante", "Relevant"),
@@ -263,11 +263,11 @@ const SURVEYS = {
         opt("nenhum", "Nenhum", "None"),
       ] },
       { id: "q12", type: "single", text: { pt: "Após a participação no evento, sua gestora identificou necessidade de ajustar sua estratégia de captação ou atuação internacional?", en: "After taking part in the event, did your fund manager identify a need to adjust its fundraising strategy or international activity?" }, options: [opt("sim", "Sim", "Yes"), opt("nao", "Não", "No")] },
-      { id: "q13", type: "text", text: { pt: "Se respondeu SIM, qual aspecto da estratégia pretende ajustar?", en: "If you answered YES, which aspect of the strategy do you plan to adjust?" }, optional: true, showIf: { q: "q12", equals: "sim" }, numberLabel: "12.1" },
+      { id: "q13", type: "text", text: { pt: "Se respondeu SIM, qual aspecto da estratégia pretende ajustar?", en: "If you answered YES, which aspect of the strategy do you plan to adjust?" }, optional: false, showIf: { q: "q12", equals: "sim" }, numberLabel: "12.1" },
       { id: "q14", type: "scale", text: { pt: "Como você avalia a qualidade dos investidores e das reuniões de matchmaking?", en: "How would you rate the quality of the investors and the matchmaking meetings?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
       { id: "q15", type: "scale", text: { pt: "Como você avalia a organização da ação e o apoio da equipe da ABVCAP?", en: "How would you rate the organization of the activity and the support from the ABVCAP team?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
       { id: "q16", type: "text", text: { pt: "O que mais funcionou e o que poderia ser melhorado?", en: "What worked best and what could be improved?" }, optional: true },
-      { id: "q17", type: "multi", text: { pt: "Quais ações você pretende ou tem interesse em participar no âmbito do programa inBrazil?", en: "Which activities do you intend to or are interested in taking part in under the inBrazil program?" }, options: INBRAZIL_ACTIVITIES_OPTIONS },
+      { id: "q17", type: "multi", text: { pt: "Quais ações você pretende ou tem interesse em participar no âmbito do programa inBrazil?", en: "Which activities do you intend to or are interested in taking part in under the inBrazil program?" }, options: INBRAZIL_ACTIVITIES_OPTIONS, optional: true },
     ],
   },
   "investidores-lpday": {
@@ -523,7 +523,11 @@ function collectAnswers(root, survey) {
       answers[q.id] = checked;
     } else if (q.type === "text") {
       const value = root.querySelector(`textarea[data-qid="${q.id}"]`).value.trim();
-      if (value) answers[q.id] = value;
+      if (!value) {
+        if (q.optional === false) { qEl.classList.add("has-error"); valid = false; }
+        return;
+      }
+      answers[q.id] = value;
     } else if (q.type === "short") {
       const value = root.querySelector(`input[data-qid="${q.id}"]`).value.trim();
       const isRequired = q.optional === false || (q.requiredIf && !!answers[q.requiredIf.q]);

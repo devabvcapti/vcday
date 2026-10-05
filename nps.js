@@ -236,6 +236,7 @@ const SURVEYS = {
       { id: "q1", type: "short", text: { pt: "Nome", en: "Name" }, optional: false },
       { id: "q2", type: "short", text: { pt: "Gestora", en: "Fund manager" }, optional: false },
       { id: "q3", type: "short", text: { pt: "Cargo", en: "Position" }, optional: false },
+      { id: "q3b", type: "short", text: { pt: "Qual o CNPJ?", en: "What is the company's tax ID (CNPJ)?" }, placeholder: { pt: "00.000.000/0000-00", en: "00.000.000/0000-00" }, optional: true },
       { id: "q4", type: "single", text: { pt: "Quantas conversas profissionalmente relevantes você teve durante o evento?", en: "How many professionally relevant conversations did you have during the event?" }, options: FREQ_OPTIONS },
       { id: "q5", type: "single", text: { pt: "Quantos desses contatos eram novos para você ou para sua gestora?", en: "How many of these contacts were new to you or your fund manager?" }, options: FREQ_OPTIONS_M },
       { id: "q6", type: "multi", text: { pt: "Quais foram os principais tipos de contatos realizados?", en: "What were the main types of contacts made?" }, options: [
@@ -263,7 +264,7 @@ const SURVEYS = {
         opt("nenhum", "Nenhum", "None"),
       ] },
       { id: "q12", type: "single", text: { pt: "Após a participação no evento, sua gestora identificou necessidade de ajustar sua estratégia de captação ou atuação internacional?", en: "After taking part in the event, did your fund manager identify a need to adjust its fundraising strategy or international activity?" }, options: [opt("sim", "Sim", "Yes"), opt("nao", "Não", "No")] },
-      { id: "q13", type: "text", text: { pt: "Se respondeu SIM, qual aspecto da estratégia pretende ajustar?", en: "If you answered YES, which aspect of the strategy do you plan to adjust?" }, optional: false, showIf: { q: "q12", equals: "sim" }, numberLabel: "12.1" },
+      { id: "q13", type: "text", text: { pt: "Se respondeu SIM, qual aspecto da estratégia pretende ajustar?", en: "If you answered YES, which aspect of the strategy do you plan to adjust?" }, optional: false, showIf: { q: "q12", equals: "sim" }, numberLabel: "13.1" },
       { id: "q14", type: "scale", text: { pt: "Como você avalia a qualidade dos investidores e das reuniões de matchmaking?", en: "How would you rate the quality of the investors and the matchmaking meetings?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
       { id: "q15", type: "scale", text: { pt: "Como você avalia a organização da ação e o apoio da equipe da ABVCAP?", en: "How would you rate the organization of the activity and the support from the ABVCAP team?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
       { id: "q16", type: "text", text: { pt: "O que mais funcionou e o que poderia ser melhorado?", en: "What worked best and what could be improved?" }, optional: true },

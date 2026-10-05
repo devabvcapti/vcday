@@ -406,3 +406,27 @@ textarea:focus, input[type="text"]:focus, input[type="email"]:focus {
   .scale-btn { width: 26px; height: 32px; font-size: 12px; }
   .scale-row { gap: 3px; }
 }
+
+/* Pergunta "matriz" (uma nota + continuidade + feedback por item de uma lista, ex.: uma reuniao). */
+.matrix-row {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  background: var(--surface);
+}
+.matrix-row-title { font-weight: 700; color: var(--ink); margin-bottom: 10px; font-size: 14px; }
+.matrix-field { margin-bottom: 10px; }
+.matrix-field:last-child { margin-bottom: 0; }
+.matrix-field-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 6px;
+}
+.matrix-field .scale-row .scale-btn { width: 28px; height: 28px; font-size: 12px; }
+.matrix-field .choice-group-inline { flex-direction: row; flex-wrap: wrap; }
+.matrix-field .choice-group-inline .choice-option { padding: 6px 10px; font-size: 12.5px; }
+.matrix-field textarea { font-size: 13px; }

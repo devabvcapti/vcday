@@ -12,7 +12,7 @@
   <link rel="apple-touch-icon" href="assets/favicon-180.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" />
-  <link rel="stylesheet" href="styles.css?v=15" />
+  <link rel="stylesheet" href="styles.css?v=16" />
   <style>
     .wrap-wide { max-width: 860px; margin-inline: auto; padding-block: 28px 64px; }
     #login-card { max-width: 360px; margin: 15vh auto 0; padding: 26px; text-align: center; }
@@ -47,6 +47,11 @@
 
     .text-answers { display: flex; flex-direction: column; gap: 8px; max-height: 340px; overflow-y: auto; margin-top: 4px; }
     .text-answer { font-size: 13px; color: var(--ink-soft); padding: 10px 12px; background: var(--bg); border-radius: 4px; border: 1px solid var(--line); }
+
+    .matrix-row-summary { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+    .matrix-row-summary:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+    .matrix-row-summary-title { font-weight: 700; font-size: 13px; color: var(--ink); margin-bottom: 4px; }
+    .matrix-row-summary-meta { font-size: 12px; color: var(--ink-faint); margin-bottom: 6px; }
 
     .dashboard-summary { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 20px; flex-wrap: wrap; gap: 8px; }
     .dashboard-summary h2 { font-size: 20px; }
@@ -91,7 +96,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="app.js?v=22"></script>
-  <script src="nps.js?v=14"></script>
+  <script src="nps.js?v=15"></script>
   <script>
     (function () {
       let passcode = sessionStorage.getItem("vcday_mod_passcode") || "";
@@ -232,15 +237,52 @@
           `;
         }
 
-        if (q.type === "text") {
+        if (q.type === "text" || (q.type === "short" && q.id !== "nome" && q.id !== "email")) {
           const answers = responses.map((r) => r.answers[q.id]).filter(Boolean);
           if (!answers.length) {
-            return `<div class="card stat-card"><div class="stat-q">${escapeHtml(q.text.pt)}</div><p class="stat-empty">Sem comentários ainda.</p></div>`;
+            return `<div class="card stat-card"><div class="stat-q">${escapeHtml(q.text.pt)}</div><p class="stat-empty">Sem respostas ainda.</p></div>`;
           }
           return `
             <div class="card stat-card">
               <div class="stat-q">${escapeHtml(q.text.pt)} <span class="stat-empty">(${answers.length})</span></div>
               <div class="text-answers">${answers.map((a) => `<div class="text-answer">${escapeHtml(a)}</div>`).join("")}</div>
+            </div>
+          `;
+        }
+
+        if (q.type === "matrix") {
+          const rowsHtml = q.rows
+            .map((row) => {
+              const scores = responses.map((r) => r.answers[q.id]?.[row.value]?.score).filter((v) => typeof v === "number");
+              const continuities = responses.map((r) => r.answers[q.id]?.[row.value]?.continuity).filter(Boolean);
+              const feedbacks = responses.map((r) => r.answers[q.id]?.[row.value]?.feedback).filter(Boolean);
+              if (!scores.length && !continuities.length && !feedbacks.length) return "";
+              const avg = scores.length ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1) : "—";
+              const contSummary = continuities.length
+                ? continuities
+                    .map((c) => {
+                      const found = (q.continuityOptions || []).find((o) => o.value === c);
+                      return found ? found.pt : c;
+                    })
+                    .join(", ")
+                : "—";
+              return `
+                <div class="matrix-row-summary">
+                  <div class="matrix-row-summary-title">${escapeHtml(row.label)}</div>
+                  <div class="matrix-row-summary-meta">Nota: ${avg}/10 · Continuidade: ${escapeHtml(contSummary)}</div>
+                  ${feedbacks.length ? `<div class="text-answers">${feedbacks.map((f) => `<div class="text-answer">${escapeHtml(f)}</div>`).join("")}</div>` : ""}
+                </div>
+              `;
+            })
+            .filter(Boolean)
+            .join("");
+          if (!rowsHtml) {
+            return `<div class="card stat-card"><div class="stat-q">${escapeHtml(q.text.pt)}</div><p class="stat-empty">Sem respostas ainda.</p></div>`;
+          }
+          return `
+            <div class="card stat-card">
+              <div class="stat-q">${escapeHtml(q.text.pt)}</div>
+              ${rowsHtml}
             </div>
           `;
         }

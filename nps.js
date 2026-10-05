@@ -78,6 +78,67 @@ const ATTEND_2027_OPTIONS = [
   opt("provavelmente-nao", "Provavelmente não", "Probably not"),
 ];
 
+// --- Opcoes especificas das pesquisas do LP Day (Gestores, Investidores/LPs, Carlos) ---
+
+/** Mesma escala de frequencia de FREQ_OPTIONS, mas concordancia no masculino ("contatos", nao "conversas"). */
+const FREQ_OPTIONS_M = [
+  opt("nenhum", "Nenhum", "None"),
+  opt("1-2", "1 a 2", "1 to 2"),
+  opt("3-5", "3 a 5", "3 to 5"),
+  opt("6-10", "6 a 10", "6 to 10"),
+  opt("mais-de-10", "Mais de 10", "More than 10"),
+];
+
+const DEAL_PROGRESS_OPTIONS_LPDAY = [
+  opt("sim-andamento", "Sim, já há conversa em andamento", "Yes, conversations are already underway"),
+  opt("talvez", "Talvez, ainda é cedo para avaliar", "Maybe, it is still too early to assess"),
+  opt("nao", "Não", "No"),
+];
+
+/** Escala curta usada para "quantas gestoras/empresas avancaram para diligencia" - termina em "5+", nao "mais de 10". */
+const DILIGENCE_PROGRESS_OPTIONS = [
+  opt("nenhuma", "Nenhuma", "None"),
+  opt("1-2", "1 a 2", "1 to 2"),
+  opt("3-5", "3 a 5", "3 to 5"),
+  opt("5-mais", "5+", "5+"),
+];
+
+const MATRIX_CONTINUITY_OPTIONS = [
+  opt("sim", "Sim", "Yes"),
+  opt("talvez", "Talvez", "Maybe"),
+  opt("nao", "Não", "No"),
+];
+
+/** Lista de acoes do programa inBrazil, repetida identica nas 3 pesquisas do LP Day. */
+const INBRAZIL_ACTIVITIES_OPTIONS = [
+  opt("missao-ny-lavca", "Missão NY LAVCA – Out/2026", "NY LAVCA Mission – Oct/2026"),
+  opt("missao-europa-giin", "Missão Europa GIIN – Out/26", "Europe GIIN Mission – Oct/26"),
+  opt("global-fundraising-bootcamp", "Global Fundraising Bootcamp SP – Dez/26", "Global Fundraising Bootcamp SP – Dec/26"),
+  opt("missao-mexico", "Missão Mexico – Fev/27", "Mexico Mission – Feb/27"),
+  opt("missao-ca", "Missão CA – Mar/27", "CA Mission – Mar/27"),
+  opt("forum-investimentos-sustentaveis", "Fórum de Investimentos Sustentáveis SP – TRI 1 2027", "Sustainable Investments Forum SP – Q1 2027"),
+  opt("abvcap-experience-2027", "ABVCAP Experience – Jun/2027", "ABVCAP Experience – Jun/2027"),
+];
+
+/** As 15 reunioes da pesquisa personalizada do Carlos / responsAbility Investments - nomes proprios, iguais em pt/en. */
+const CARLOS_MEETING_ROWS = [
+  { value: "volpe-capital", label: "Volpe Capital" },
+  { value: "just-climate", label: "Just Climate" },
+  { value: "crescera", label: "Crescera" },
+  { value: "blue-like-an-orange", label: "Blue Like an Orange" },
+  { value: "aqua-capital", label: "Aqua Capital" },
+  { value: "kptl", label: "KPTL" },
+  { value: "valetec", label: "Valetec" },
+  { value: "deg", label: "DEG" },
+  { value: "gridx", label: "Gridx" },
+  { value: "vox-capital", label: "Vox Capital" },
+  { value: "newave", label: "Newave" },
+  { value: "quartzo-capital", label: "Quartzo Capital" },
+  { value: "gef", label: "GEF" },
+  { value: "mov", label: "MOV" },
+  { value: "impact-fund", label: "Impact Fund" },
+];
+
 /** Os 18 "Painel N: ..." do Congresso, como opcoes canonicas (value = panel.id) para a pergunta de multipla escolha. */
 async function npsPanelOptions() {
   const panels = await fetchPanels();
@@ -166,12 +227,166 @@ const SURVEYS = {
       { id: "q10", type: "text", text: { pt: "Algum comentário ou sugestão?", en: "Any comments or suggestions?" }, optional: true },
     ],
   },
+  "gestores-lpday": {
+    title: { pt: "Pesquisa · Gestores (LP Day)", en: "Survey · Fund Managers (LP Day)" },
+    audience: { pt: "Para gestores participantes das agendas de matchmaking", en: "For fund managers who took part in the matchmaking agendas" },
+    estimate: { pt: "3 a 4 minutos", en: "3 to 4 minutes" },
+    thankYou: { pt: "Obrigado pela participação! Suas respostas vão ajudar a melhorar as próximas edições.", en: "Thank you for taking part! Your answers will help improve future editions." },
+    questions: [
+      { id: "q1", type: "short", text: { pt: "Nome", en: "Name" }, optional: true },
+      { id: "q2", type: "short", text: { pt: "Gestora", en: "Fund manager" }, optional: true },
+      { id: "q3", type: "short", text: { pt: "Cargo", en: "Position" }, optional: true },
+      { id: "q4", type: "single", text: { pt: "Quantas conversas profissionalmente relevantes você teve durante o evento?", en: "How many professionally relevant conversations did you have during the event?" }, options: FREQ_OPTIONS },
+      { id: "q5", type: "single", text: { pt: "Quantos desses contatos eram novos para você ou para sua gestora?", en: "How many of these contacts were new to you or your fund manager?" }, options: FREQ_OPTIONS_M },
+      { id: "q6", type: "multi", text: { pt: "Quais foram os principais tipos de contatos realizados?", en: "What were the main types of contacts made?" }, options: [
+        opt("investidores-institucionais", "Investidores institucionais", "Institutional investors"),
+        opt("family-offices", "Family offices", "Family offices"),
+        opt("fundos-de-fundos", "Fundos de fundos", "Funds of funds"),
+        opt("gestores", "Gestores", "Fund managers"),
+        opt("empresas-corporates", "Empresas / corporates", "Companies / corporates"),
+        opt("instituicoes-desenvolvimento", "Instituições de desenvolvimento", "Development finance institutions"),
+        opt("outros", "Outros", "Other"),
+      ] },
+      { id: "q7", type: "single", text: { pt: "Alguma dessas conversas deve evoluir para investimento, parceria ou outra oportunidade concreta?", en: "Do you expect any of these conversations to turn into an investment, partnership, or other concrete opportunity?" }, options: DEAL_PROGRESS_OPTIONS_LPDAY },
+      { id: "q8", type: "single", text: { pt: "Quantos contatos seguem em negociação ou acompanhamento após o evento?", en: "How many contacts remain under negotiation or follow-up after the event?" }, options: FREQ_OPTIONS_M },
+      { id: "q9", type: "single", text: { pt: "Há algum contato que tenha avançado para análise mais aprofundada ou processo de diligência?", en: "Has any contact progressed to a more in-depth analysis or due diligence process?" }, options: [
+        opt("sim", "Sim", "Yes"),
+        opt("ainda-nao-potencial", "Ainda não, mas há potencial", "Not yet, but there is potential"),
+        opt("nao", "Não", "No"),
+      ] },
+      { id: "q10", type: "text", text: { pt: "Qual a expectativa de negócios ou investimentos para os próximos 12 meses decorrentes dos contatos realizados no evento?", en: "What is your expectation for business or investments over the next 12 months resulting from the contacts made at the event?" }, hint: { pt: "Informar valor aproximado em US$ milhões, quando aplicável.", en: "Indicate an approximate value in US$ million, when applicable." }, optional: true },
+      { id: "q11", type: "single", text: { pt: "Qual foi o papel da ABVCAP / programa inBrazil na geração ou no avanço dessas oportunidades?", en: "What role did ABVCAP / the inBrazil program play in generating or advancing these opportunities?" }, options: [
+        opt("fundamental", "Fundamental", "Fundamental"),
+        opt("relevante", "Relevante", "Relevant"),
+        opt("parcial", "Parcial", "Partial"),
+        opt("pequeno", "Pequeno", "Small"),
+        opt("nenhum", "Nenhum", "None"),
+      ] },
+      { id: "q12", type: "single", text: { pt: "Após a participação no evento, sua gestora identificou necessidade de ajustar sua estratégia de captação ou atuação internacional?", en: "After taking part in the event, did your fund manager identify a need to adjust its fundraising strategy or international activity?" }, options: [opt("sim", "Sim", "Yes"), opt("nao", "Não", "No")] },
+      { id: "q13", type: "text", text: { pt: "Se respondeu SIM, qual aspecto da estratégia pretende ajustar?", en: "If you answered YES, which aspect of the strategy do you plan to adjust?" }, optional: true, showIf: { q: "q12", equals: "sim" } },
+      { id: "q14", type: "scale", text: { pt: "Como você avalia a qualidade dos investidores e das reuniões de matchmaking?", en: "How would you rate the quality of the investors and the matchmaking meetings?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
+      { id: "q15", type: "scale", text: { pt: "Como você avalia a organização da ação e o apoio da equipe da ABVCAP?", en: "How would you rate the organization of the activity and the support from the ABVCAP team?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
+      { id: "q16", type: "text", text: { pt: "O que mais funcionou e o que poderia ser melhorado?", en: "What worked best and what could be improved?" }, optional: true },
+      { id: "q17", type: "multi", text: { pt: "Quais ações você pretende ou tem interesse em participar no âmbito do programa inBrazil?", en: "Which activities do you intend to or are interested in taking part in under the inBrazil program?" }, options: INBRAZIL_ACTIVITIES_OPTIONS },
+    ],
+  },
+  "investidores-lpday": {
+    title: { pt: "Pesquisa · Investidores (LPs)", en: "Survey · Investors (LPs)" },
+    audience: { pt: "Para investidores participantes das agendas e atividades do Experience", en: "For investors who took part in the Experience's agendas and activities" },
+    estimate: { pt: "3 a 4 minutos", en: "3 to 4 minutes" },
+    thankYou: { pt: "Obrigado pela participação! Suas respostas vão ajudar a melhorar as próximas edições.", en: "Thank you for taking part! Your answers will help improve future editions." },
+    questions: [
+      { id: "q1", type: "short", text: { pt: "Nome", en: "Name" }, optional: true },
+      { id: "q2", type: "short", text: { pt: "Instituição", en: "Institution" }, optional: true },
+      { id: "q3", type: "short", text: { pt: "País", en: "Country" }, optional: true },
+      { id: "q4", type: "short", text: { pt: "Cargo", en: "Position" }, optional: true },
+      { id: "q5", type: "single", text: { pt: "Qual o perfil da sua instituição?", en: "What is your institution's profile?" }, options: [
+        opt("fundo-pensao", "Fundo de pensão", "Pension fund"),
+        opt("endowment-foundation", "Endowment / foundation", "Endowment / foundation"),
+        opt("family-office", "Family office", "Family office"),
+        opt("fundo-de-fundos", "Fundo de fundos", "Fund of funds"),
+        opt("asset-manager", "Asset manager", "Asset manager"),
+        opt("instituicao-financeira-banco", "Instituição financeira / banco", "Financial institution / bank"),
+        opt("instituicao-desenvolvimento", "Instituição de desenvolvimento", "Development finance institution"),
+        opt("corporate-investor", "Corporate investor", "Corporate investor"),
+        opt("outro", "Outro", "Other"),
+      ] },
+      { id: "q6", type: "single", text: { pt: "Quantas gestoras brasileiras você conheceu durante o evento?", en: "How many Brazilian fund managers did you meet during the event?" }, options: FREQ_OPTIONS },
+      { id: "q7", type: "single", text: { pt: "Quantas dessas gestoras você ainda não conhecia anteriormente?", en: "How many of these fund managers had you not previously known?" }, options: FREQ_OPTIONS },
+      { id: "q8", type: "single", text: { pt: "Alguma das gestoras ou oportunidades apresentadas deverá evoluir para uma conversa mais aprofundada?", en: "Are any of the fund managers or opportunities presented expected to lead to a more in-depth conversation?" }, options: DEAL_PROGRESS_OPTIONS_LPDAY },
+      { id: "q9", type: "single", text: { pt: "Quantas gestoras ou empresas avançaram para análise mais aprofundada ou processo de diligência?", en: "How many fund managers or companies progressed to a more in-depth analysis or due diligence process?" }, options: DILIGENCE_PROGRESS_OPTIONS },
+      { id: "q10", type: "multi", text: { pt: "Quais próximos passos você prevê a partir dessas conexões?", en: "What next steps do you anticipate from these connections?" }, options: [
+        opt("acompanhamento-futuro", "Acompanhamento para oportunidades futuras", "Follow-up for future opportunities"),
+        opt("discussao-investimento", "Discussão de potencial investimento", "Discussion of potential investment"),
+        opt("nenhum-momento", "Nenhum neste momento", "None at this time"),
+        opt("outro", "Outro", "Other"),
+      ] },
+      { id: "q11", type: "single", text: { pt: "Sua instituição possui atualmente interesse em ampliar sua exposição a alternativos no Brasil?", en: "Is your institution currently interested in increasing its exposure to alternative investments in Brazil?" }, options: [
+        opt("sim-curto-prazo", "Sim, no curto prazo", "Yes, in the short term"),
+        opt("sim-medio-prazo", "Sim, no médio prazo", "Yes, in the medium term"),
+        opt("avaliando-sem-definicao", "Estamos avaliando oportunidades, mas sem definição", "We are evaluating opportunities but without a defined timeline"),
+        opt("nao-momento", "Não neste momento", "Not at this time"),
+      ] },
+      { id: "q12", type: "multi", text: { pt: "Quais estratégias despertaram maior interesse?", en: "Which strategies generated the greatest interest?" }, options: [
+        opt("venture-capital", "Venture Capital", "Venture Capital"),
+        opt("growth-equity", "Growth Equity", "Growth Equity"),
+        opt("buyout", "Buyout", "Buyout"),
+        opt("infrastructure", "Infrastructure", "Infrastructure"),
+        opt("private-credit", "Private Credit", "Private Credit"),
+        opt("impact", "Impact", "Impact"),
+        opt("special-situations", "Special Situations", "Special Situations"),
+        opt("outras", "Outras", "Other"),
+      ] },
+      { id: "q13", type: "text", text: { pt: "Caso aplicável, qual faixa de compromisso ou investimento sua instituição costuma considerar?", en: "If applicable, what commitment or investment range does your institution typically consider?" }, hint: { pt: "Informar faixa aproximada em US$.", en: "Indicate an approximate range in US$." }, optional: true },
+      { id: "q14", type: "scale", text: { pt: "De 0 a 10, em que medida o evento ampliou seu conhecimento sobre o mercado brasileiro de Private Equity e Venture Capital?", en: "From 0 to 10, to what extent did the event expand your knowledge of the Brazilian Private Equity and Venture Capital market?" }, anchors: { pt: ["Nada", "Totalmente"], en: ["Not at all", "Completely"] } },
+      { id: "q15", type: "scale", text: { pt: "De 0 a 10, em que medida o evento contribuiu para identificar novas oportunidades de investimento no mercado de capital privado no Brasil?", en: "From 0 to 10, to what extent did the event contribute to identifying new investment opportunities in Brazil's private capital market?" }, anchors: { pt: ["Nada", "Totalmente"], en: ["Not at all", "Completely"] } },
+      { id: "q16", type: "scale", text: { pt: "Como você avalia a qualidade das gestoras e oportunidades apresentadas?", en: "How do you rate the quality of the fund managers and opportunities presented?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
+      { id: "q17", type: "scale", text: { pt: "Como você avalia o matchmaking e o apoio da equipe da ABVCAP?", en: "How do you rate the matchmaking and support provided by the ABVCAP team?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
+      { id: "q18", type: "text", text: { pt: "O que poderia facilitar uma maior alocação de capital no mercado brasileiro?", en: "What could facilitate a greater allocation of capital to the Brazilian market?" }, optional: true },
+      { id: "q19", type: "text", text: { pt: "Algum comentário ou sugestão para as próximas edições?", en: "Any comments or suggestions for future editions?" }, optional: true },
+      { id: "q20", type: "multi", text: { pt: "Quais ações você pretende ou tem interesse em participar?", en: "Which activities are you interested in participating in?" }, options: INBRAZIL_ACTIVITIES_OPTIONS },
+    ],
+  },
+  "carlos-responsability": {
+    title: { pt: "Pesquisa · Carlos — responsAbility Investments", en: "Survey · Carlos — responsAbility Investments" },
+    audience: { pt: "Para Carlos / responsAbility Investments", en: "For Carlos / responsAbility Investments" },
+    estimate: { pt: "6 a 8 minutos", en: "6 to 8 minutes" },
+    intro: { pt: "Esta versão busca registrar, com maior nível de detalhe, os resultados das reuniões realizadas e os desdobramentos da participação viabilizada com recursos do Convênio.", en: "This version aims to record, in greater detail, the results of the meetings held and the outcomes of the participation made possible through the Convênio (cooperation agreement) funding." },
+    thankYou: { pt: "Obrigado pelo retorno detalhado! Isso vai ajudar a ABVCAP a dar continuidade às conexões geradas.", en: "Thank you for the detailed feedback! This will help ABVCAP follow up on the connections generated." },
+    questions: [
+      { id: "q1", type: "scale", text: { pt: "Em que medida os objetivos da sua participação foram atingidos?", en: "To what extent were the objectives of your participation achieved?" }, anchors: { pt: ["Nada", "Totalmente"], en: ["Not at all", "Completely"] } },
+      { id: "q2", type: "single", text: { pt: "Quantas gestoras brasileiras você conheceu ou com quem teve conversas relevantes durante o evento?", en: "How many Brazilian fund managers did you meet or have relevant conversations with during the event?" }, options: FREQ_OPTIONS },
+      { id: "q3", type: "single", text: { pt: "Quantos novos relacionamentos foram gerados a partir da participação viabilizada pelo Convênio?", en: "How many new relationships were generated from the participation made possible by the Convênio?" }, options: FREQ_OPTIONS_M },
+      { id: "q4", type: "short", inputType: "number", optional: false, text: { pt: "Das reuniões realizadas, quantos contatos eram novos para você ou para a responsAbility Investments?", en: "Of the meetings held, how many contacts were new to you or to responsAbility Investments?" } },
+      { id: "q5", type: "short", inputType: "number", optional: false, text: { pt: "Quantos desses contatos seguem em negociação ou acompanhamento após o evento?", en: "How many of these contacts remain under negotiation or follow-up after the event?" } },
+      { id: "q6", type: "short", inputType: "number", optional: false, text: { pt: "Quantos fundos ou empresas avançaram para análise mais aprofundada ou processo de diligência?", en: "How many funds or companies progressed to a more in-depth analysis or due diligence process?" } },
+      { id: "q7", type: "single", text: { pt: "Há uma estimativa de investimentos ou negócios potencialmente relacionados às conexões realizadas?", en: "Is there an estimate of investments or business potentially related to the connections made?" }, options: [
+        opt("sim", "Sim", "Yes"),
+        opt("ainda-nao-possivel", "Ainda não é possível estimar", "Not yet possible to estimate"),
+        opt("nao", "Não", "No"),
+      ] },
+      { id: "q8", type: "text", text: { pt: "Qual a expectativa de geração de negócios ou investimentos nos próximos 12 meses em decorrência da participação?", en: "What is your expectation for generating business or investments over the next 12 months as a result of this participation?" }, hint: { pt: "Informar valor aproximado em US$, quando aplicável.", en: "Indicate an approximate value in US$, when applicable." }, optional: true },
+      { id: "q9", type: "matrix", text: { pt: "Para cada reunião abaixo, indique uma nota de 0 a 10 para a relevância da conversa, se haverá continuidade e um breve feedback.", en: "For each meeting below, indicate a score from 0 to 10 for how relevant the conversation was, whether there will be follow-up, and brief feedback." }, rows: CARLOS_MEETING_ROWS, continuityOptions: MATRIX_CONTINUITY_OPTIONS, scoreLabel: { pt: "Nota (0–10) para a relevância da conversa", en: "Score (0–10) for how relevant the conversation was" }, continuityLabel: { pt: "Vai ter continuidade?", en: "Will there be follow-up?" }, feedbackLabel: { pt: "Feedback / próximo passo", en: "Feedback / next step" } },
+      { id: "q10", type: "text", text: { pt: "Quais reuniões você considera prioritárias para acompanhamento pela ABVCAP?", en: "Which meetings do you consider a priority for ABVCAP to follow up on?" }, optional: true },
+      { id: "q11", type: "scale", text: { pt: "Em que medida o apoio viabilizado pelo Convênio contribuiu para sua participação e para os resultados obtidos?", en: "To what extent did the support made possible by the Convênio contribute to your participation and to the results obtained?" }, anchors: { pt: ["Nada", "Totalmente"], en: ["Not at all", "Completely"] } },
+      { id: "q12", type: "scale", text: { pt: "Como você avalia o conteúdo do evento?", en: "How would you rate the event's content?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
+      { id: "q13", type: "scale", text: { pt: "Como você avalia a infraestrutura e a organização do evento?", en: "How would you rate the event's infrastructure and organization?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
+      { id: "q14", type: "scale", text: { pt: "Como você avalia a qualidade das reuniões organizadas?", en: "How would you rate the quality of the meetings organized?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
+      { id: "q15", type: "text", text: { pt: "Algum comentário adicional sobre a participação, as reuniões ou os próximos passos?", en: "Any additional comments about the participation, the meetings, or next steps?" }, optional: true },
+      { id: "q16", type: "multi", text: { pt: "Quais ações você pretende ou tem interesse em participar?", en: "Which activities do you intend to or are interested in taking part in?" }, options: INBRAZIL_ACTIVITIES_OPTIONS },
+    ],
+  },
 };
 
 function scaleAnchorsHtml(anchors) {
   if (!anchors) return "";
   const [lo, hi] = tr(anchors);
   return `<div class="scale-anchors"><span>0 · ${escapeHtml(lo)}</span><span>10 · ${escapeHtml(hi)}</span></div>`;
+}
+
+/** Uma linha da pergunta "matriz" (nota 0-10 + continuidade + feedback para um item, ex.: uma reuniao especifica). */
+function renderMatrixRowHtml(q, row) {
+  const scaleButtons = Array.from({ length: 11 }, (_, n) => `<button type="button" class="scale-btn" data-value="${n}">${n}</button>`).join("");
+  const continuityOptions = q.continuityOptions
+    .map((o) => `<label class="choice-option"><input type="radio" name="matrix-continuity-${q.id}-${row.value}" value="${escapeHtml(o.value)}" /><span>${escapeHtml(tr(o))}</span></label>`)
+    .join("");
+  return `
+    <div class="matrix-row" data-row="${row.value}">
+      <div class="matrix-row-title">${escapeHtml(row.label)}</div>
+      <div class="matrix-field">
+        <div class="matrix-field-label">${escapeHtml(tr(q.scoreLabel))}</div>
+        <div class="scale-row" data-qid="matrix-score-${q.id}-${row.value}">${scaleButtons}</div>
+      </div>
+      <div class="matrix-field">
+        <div class="matrix-field-label">${escapeHtml(tr(q.continuityLabel))}</div>
+        <div class="choice-group choice-group-inline" data-type="single">${continuityOptions}</div>
+      </div>
+      <div class="matrix-field">
+        <div class="matrix-field-label">${escapeHtml(tr(q.feedbackLabel))}</div>
+        <textarea data-qid="matrix-feedback-${q.id}-${row.value}" rows="2" maxlength="400" placeholder="${escapeHtml(ns("writeHere"))}"></textarea>
+      </div>
+    </div>
+  `;
 }
 
 function renderQuestionHtml(q, index, dynamicOptions) {
@@ -191,10 +406,12 @@ function renderQuestionHtml(q, index, dynamicOptions) {
   } else if (q.type === "text") {
     body = `<textarea data-qid="${q.id}" rows="3" maxlength="600" placeholder="${escapeHtml(ns("writeHere"))}"></textarea>`;
   } else if (q.type === "short") {
-    const inputType = q.inputType === "email" ? "email" : "text";
+    const inputType = q.inputType === "email" ? "email" : q.inputType === "number" ? "number" : "text";
     body = `<input type="${inputType}" data-qid="${q.id}" maxlength="200" placeholder="${q.placeholder ? escapeHtml(tr(q.placeholder)) : ""}" />`;
   } else if (q.type === "consent") {
     body = `<label class="choice-option"><input type="checkbox" data-qid="${q.id}" /><span>${escapeHtml(tr(q.consentLabel))}</span></label>`;
+  } else if (q.type === "matrix") {
+    body = q.rows.map((row) => renderMatrixRowHtml(q, row)).join("");
   }
 
   return `
@@ -324,6 +541,24 @@ function collectAnswers(root, survey) {
         return;
       }
       answers[q.id] = true;
+    } else if (q.type === "matrix") {
+      // Sempre opcional por linha - nem toda reuniao listada necessariamente aconteceu.
+      const matrixAnswers = {};
+      q.rows.forEach((row) => {
+        const scoreRow = root.querySelector(`.scale-row[data-qid="matrix-score-${q.id}-${row.value}"]`);
+        const continuityChecked = root.querySelector(`input[name="matrix-continuity-${q.id}-${row.value}"]:checked`);
+        const feedbackEl = root.querySelector(`textarea[data-qid="matrix-feedback-${q.id}-${row.value}"]`);
+        const score = scoreRow && scoreRow.dataset.value !== undefined ? Number(scoreRow.dataset.value) : null;
+        const continuity = continuityChecked ? continuityChecked.value : null;
+        const feedback = feedbackEl ? feedbackEl.value.trim() : "";
+        if (score !== null || continuity || feedback) {
+          matrixAnswers[row.value] = {};
+          if (score !== null) matrixAnswers[row.value].score = score;
+          if (continuity) matrixAnswers[row.value].continuity = continuity;
+          if (feedback) matrixAnswers[row.value].feedback = feedback;
+        }
+      });
+      if (Object.keys(matrixAnswers).length) answers[q.id] = matrixAnswers;
     }
   });
 

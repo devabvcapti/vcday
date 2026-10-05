@@ -331,7 +331,6 @@ const SURVEYS = {
     title: { pt: "Pesquisa · Carlos — responsAbility Investments", en: "Survey · Carlos — responsAbility Investments" },
     audience: { pt: "Para Carlos / responsAbility Investments", en: "For Carlos / responsAbility Investments" },
     estimate: { pt: "6 a 8 minutos", en: "6 to 8 minutes" },
-    intro: { pt: "Esta versão busca registrar, com maior nível de detalhe, os resultados das reuniões realizadas e os desdobramentos da participação viabilizada com recursos do Convênio.", en: "This version aims to record, in greater detail, the results of the meetings held and the outcomes of the participation made possible through the Convênio (cooperation agreement) funding." },
     thankYou: { pt: "Obrigado pelo retorno detalhado! Isso vai ajudar a ABVCAP a dar continuidade às conexões geradas.", en: "Thank you for the detailed feedback! This will help ABVCAP follow up on the connections generated." },
     questions: [
       { id: "q1", type: "scale", text: { pt: "Em que medida os objetivos da sua participação foram atingidos?", en: "To what extent were the objectives of your participation achieved?" }, anchors: { pt: ["Nada", "Totalmente"], en: ["Not at all", "Completely"] } },

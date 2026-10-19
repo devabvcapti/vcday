@@ -356,6 +356,71 @@ const SURVEYS = {
       { id: "q16", type: "multi", text: { pt: "Quais ações você pretende ou tem interesse em participar?", en: "Which activities do you intend to or are interested in taking part in?" }, options: INBRAZIL_ACTIVITIES_OPTIONS },
     ],
   },
+  "participantes-inbrazil": {
+    title: { pt: "Pesquisa · Participantes (PEVC inBrazil)", en: "Survey · Participants (PEVC inBrazil)" },
+    audience: { pt: "Para participantes do PEVC inBrazil Forum 2026", en: "For PEVC inBrazil Forum 2026 participants" },
+    estimate: { pt: "3 a 4 minutos", en: "3 to 4 minutes" },
+    thankYou: { pt: "Obrigado pela participação! Suas respostas vão ajudar a melhorar as próximas edições.", en: "Thank you for taking part! Your answers will help improve future editions." },
+    eventName: "PEVC inBrazil Forum 2026",
+    eventSlug: "pevc-inbrazil-forum-2026",
+    questions: [
+      { id: "q1", type: "short", text: { pt: "Nome", en: "Name" }, optional: true },
+      { id: "q2", type: "short", text: { pt: "Instituição", en: "Institution" }, optional: true },
+      { id: "q3", type: "short", text: { pt: "Cargo", en: "Position / Job Title" }, optional: true },
+      { id: "q4", type: "single", text: { pt: "Qual das opções melhor descreve sua instituição?", en: "What best describes your institution?" }, options: [
+        opt("investidor-institucional-lp", "Investidor institucional / LP", "Institutional Investor / LP"),
+        opt("gestor-fundos-gp", "Gestor de fundos / GP", "Fund Manager / GP"),
+        opt("family-office", "Family office", "Family Office"),
+        opt("asset-manager", "Asset manager", "Asset Manager"),
+        opt("instituicao-financeira-desenvolvimento", "Instituição financeira de desenvolvimento", "Development Finance Institution"),
+        opt("investidor-corporativo", "Investidor corporativo", "Corporate Investor"),
+        opt("prestador-servicos", "Prestador de serviços", "Service Provider"),
+        opt("outro", "Outro", "Other"),
+      ] },
+      { id: "q5", type: "scale", text: { pt: "De 0 a 10, como você avalia o PEVC inBrazil Forum de forma geral?", en: "From 0 to 10, how would you rate the PEVC inBrazil Forum overall?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
+      { id: "q6", type: "scale", text: { pt: "Em que medida o evento foi relevante para ampliar sua compreensão sobre o mercado brasileiro de capital privado?", en: "How relevant was the event in improving your understanding of the Brazilian private capital market?" }, anchors: { pt: ["Nada", "Totalmente"], en: ["Not at all", "Completely"] } },
+      { id: "q7", type: "multi", text: { pt: "Quais sessões foram mais relevantes para você?", en: "Which sessions were most relevant to you?" }, hint: { pt: "Escolha até 3.", en: "Choose up to 3." }, maxSelect: 3, options: [
+        opt("brazil-macro-outlook", "Brazil Macroeconomic and Political Outlook", "Brazil Macroeconomic and Political Outlook"),
+        opt("value-creation-playbook", "The Brazilian Value Creation Playbook", "The Brazilian Value Creation Playbook"),
+        opt("innovation-at-scale", "Innovation at Scale: The Brazilian Venture Capital Opportunity", "Innovation at Scale: The Brazilian Venture Capital Opportunity"),
+        opt("beyond-headlines", "Beyond the Headlines: How Global LPs Are Assessing Brazil", "Beyond the Headlines: How Global LPs Are Assessing Brazil"),
+      ] },
+      { id: "q8", type: "scale", text: { pt: "Como você avalia a qualidade dos palestrantes e das discussões?", en: "How would you rate the quality of the speakers and discussions?" }, anchors: { pt: ["Muito ruim", "Excelente"], en: ["Very poor", "Excellent"] } },
+      { id: "q9", type: "single", text: { pt: "Após o evento, como você descreveria o interesse da sua instituição no mercado brasileiro de capital privado?", en: "Following the event, how would you describe your institution's interest in the Brazilian private capital market?" }, options: [
+        opt("buscando-ativamente", "Buscando ativamente investir", "Actively looking to invest"),
+        opt("avaliando-curto-prazo", "Avaliando oportunidades no curto prazo", "Evaluating opportunities in the short term"),
+        opt("interessada-sem-prazo", "Interessada, mas sem prazo definido", "Interested, but without a defined timeline"),
+        opt("monitorando-mercado", "Monitorando o mercado", "Monitoring the market"),
+        opt("sem-interesse", "Sem interesse no momento", "No current interest"),
+      ] },
+      { id: "q10", type: "multi", text: { pt: "Quais estratégias de capital privado brasileiro são mais relevantes para sua instituição?", en: "Which Brazilian private capital strategies are most relevant to your institution?" }, options: [
+        opt("buyout-private-equity", "Buyout / Private Equity", "Buyout / Private Equity"),
+        opt("growth-equity", "Growth Equity", "Growth Equity"),
+        opt("venture-capital", "Venture Capital", "Venture Capital"),
+        opt("private-credit", "Private Credit", "Private Credit"),
+        opt("infrastructure", "Infrastructure", "Infrastructure"),
+        opt("impact-sustainable", "Impact / Sustainable Investments", "Impact / Sustainable Investments"),
+        opt("special-situations", "Special Situations", "Special Situations"),
+        opt("co-investments", "Co-investments", "Co-investments"),
+        opt("fund-of-funds", "Fund of Funds", "Fund of Funds"),
+        opt("outro", "Outro", "Other"),
+      ] },
+      { id: "q11", type: "single", text: { pt: "O evento ajudou você a identificar novas oportunidades de investimento, gestoras ou potenciais parceiros no Brasil?", en: "Did the event help you identify new investment opportunities, managers or potential partners in Brazil?" }, options: [
+        opt("sim", "Sim", "Yes"),
+        opt("parcialmente", "Parcialmente", "Partially"),
+        opt("ainda-nao", "Ainda não", "Not yet"),
+        opt("nao", "Não", "No"),
+      ] },
+      { id: "q12", type: "multi", text: { pt: "Quais futuras iniciativas do inBrazil você teria interesse em participar?", en: "Which future inBrazil initiatives would you be interested in participating in?" }, options: [
+        opt("global-fundraising-bootcamp", "Global Fundraising Bootcamp — São Paulo — Dez/2026", "Global Fundraising Bootcamp — São Paulo — Dec/2026"),
+        opt("missao-mexico", "Missão México — Fev/2027", "Mexico Mission — Feb/2027"),
+        opt("missao-california", "Missão Califórnia — Mar/2027", "California Mission — Mar/2027"),
+        opt("forum-investimentos-sustentaveis", "Fórum de Investimentos Sustentáveis — São Paulo — TRI 1 2027", "Sustainable Investment Forum — São Paulo — Q1 2027"),
+        opt("abvcap-experience-2027", "ABVCAP Experience — Jun/2027", "ABVCAP Experience — Jun/2027"),
+        opt("outro", "Outro", "Other"),
+      ] },
+    ],
+  },
 };
 
 function scaleAnchorsHtml(anchors) {
@@ -590,7 +655,7 @@ function wireSubmit(root, survey, surveyKey) {
 
     const { error } = await sb.from("vcday_nps_responses").insert({
       survey_slug: surveyKey,
-      event_slug: NPS_EVENT_SLUG,
+      event_slug: survey.eventSlug || NPS_EVENT_SLUG,
       nps_score: npsScore,
       answers,
     });
@@ -613,9 +678,10 @@ async function renderSurvey(surveyKey, rootId) {
   const survey = SURVEYS[surveyKey];
   const root = document.getElementById(rootId);
 
-  document.title = `${tr(survey.title)} · ABVCAP Experience 2026`;
+  const eventName = survey.eventName || "ABVCAP Experience 2026";
+  document.title = `${tr(survey.title)} · ${eventName}`;
   const eyebrowEl = document.getElementById("nps-eyebrow");
-  if (eyebrowEl) eyebrowEl.textContent = `ABVCAP Experience 2026 · ${ns("postEventSurvey")}`;
+  if (eyebrowEl) eyebrowEl.textContent = `${eventName} · ${ns("postEventSurvey")}`;
   const titleEl = document.getElementById("nps-title");
   if (titleEl) titleEl.textContent = tr(survey.title);
   const audienceEl = document.getElementById("nps-audience");

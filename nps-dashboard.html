@@ -96,7 +96,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="app.js?v=22"></script>
-  <script src="nps.js?v=21"></script>
+  <script src="nps.js?v=22"></script>
   <script>
     (function () {
       let passcode = sessionStorage.getItem("vcday_mod_passcode") || "";
@@ -114,6 +114,13 @@
         panels.forEach((p) => { panelNameMap[p.id] = p.name; });
       }
       loadPanelNames();
+
+      /** Rotulo da pesquisa nas abas/resumo do dashboard: usa `dashboardLabel` quando a pesquisa
+       *  define um (pra desambiguar de outra pesquisa com o mesmo titulo exibido ao publico,
+       *  ex. "Participantes" do Congresso x do PEVC inBrazil), senao deriva do title.pt normal. */
+      function dashboardLabel(survey) {
+        return survey.dashboardLabel || survey.title.pt.replace("Pesquisa · ", "");
+      }
 
       /** Perguntas de escolha guardam um valor canonico (ex.: "moderador", "painel-3-geopolitica");
        *  aqui resolvemos de volta para o rotulo em portugues para exibir no grafico. */
@@ -316,7 +323,7 @@
         const content = document.getElementById("dashboard-content");
         content.innerHTML = `
           <div class="dashboard-summary">
-            <h2>${escapeHtml(survey.title.pt.replace("Pesquisa · ", ""))}</h2>
+            <h2>${escapeHtml(dashboardLabel(survey))}</h2>
             <p class="hint">${responses.length} resposta${responses.length === 1 ? "" : "s"} recebidas</p>
           </div>
           ${survey.questions.map((q) => renderQuestionCard(q, responses)).join("")}
@@ -337,7 +344,7 @@
         tabsEl.innerHTML = surveyKeys
           .map((key) => {
             const count = allResponses.filter((r) => r.survey_slug === key).length;
-            return `<button type="button" class="survey-tab${key === selectedSurvey ? " active" : ""}" data-key="${key}">${escapeHtml(SURVEYS[key].title.pt.replace("Pesquisa · ", ""))} (${count})</button>`;
+            return `<button type="button" class="survey-tab${key === selectedSurvey ? " active" : ""}" data-key="${key}">${escapeHtml(dashboardLabel(SURVEYS[key]))} (${count})</button>`;
           })
           .join("");
         tabsEl.querySelectorAll(".survey-tab").forEach((btn) => {

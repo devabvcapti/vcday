@@ -357,7 +357,8 @@ const SURVEYS = {
     ],
   },
   "participantes-inbrazil": {
-    title: { pt: "Pesquisa · Participantes (PEVC inBrazil)", en: "Survey · Participants (PEVC inBrazil)" },
+    title: { pt: "Pesquisa · Participantes", en: "Survey · Participants" },
+    dashboardLabel: "Participantes (PEVC inBrazil)",
     audience: { pt: "Para participantes do PEVC inBrazil Forum 2026", en: "For PEVC inBrazil Forum 2026 participants" },
     estimate: { pt: "3 a 4 minutos", en: "3 to 4 minutes" },
     thankYou: { pt: "Obrigado pela participação! Suas respostas vão ajudar a melhorar as próximas edições.", en: "Thank you for taking part! Your answers will help improve future editions." },

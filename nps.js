@@ -412,6 +412,7 @@ const SURVEYS = {
         opt("ainda-nao", "Ainda não", "Not yet"),
         opt("nao", "Não", "No"),
       ] },
+      { id: "q11b", type: "text", text: { pt: "Comentários e Sugestões", en: "Comments and Suggestions" }, optional: true },
       { id: "q12", type: "multi", text: { pt: "Quais futuras iniciativas do inBrazil você teria interesse em participar?", en: "Which future inBrazil initiatives would you be interested in participating in?" }, options: [
         opt("global-fundraising-bootcamp", "Global Fundraising Bootcamp — São Paulo — Dez/2026", "Global Fundraising Bootcamp — São Paulo — Dec/2026"),
         opt("missao-mexico", "Missão México — Fev/2027", "Mexico Mission — Feb/2027"),

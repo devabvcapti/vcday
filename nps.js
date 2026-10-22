@@ -365,9 +365,9 @@ const SURVEYS = {
     eventName: "PEVC inBrazil Forum 2026",
     eventSlug: "pevc-inbrazil-forum-2026",
     questions: [
-      { id: "q1", type: "short", text: { pt: "Nome", en: "Name" }, optional: true },
-      { id: "q2", type: "short", text: { pt: "Instituição", en: "Institution" }, optional: true },
-      { id: "q3", type: "short", text: { pt: "Cargo", en: "Position / Job Title" }, optional: true },
+      { id: "q1", type: "short", text: { pt: "Nome", en: "Name" }, optional: false },
+      { id: "q2", type: "short", text: { pt: "Instituição", en: "Institution" }, optional: false },
+      { id: "q3", type: "short", text: { pt: "Cargo", en: "Position / Job Title" }, optional: false },
       { id: "q4", type: "single", text: { pt: "Qual das opções melhor descreve sua instituição?", en: "What best describes your institution?" }, options: [
         opt("investidor-institucional-lp", "Investidor institucional / LP", "Institutional Investor / LP"),
         opt("gestor-fundos-gp", "Gestor de fundos / GP", "Fund Manager / GP"),

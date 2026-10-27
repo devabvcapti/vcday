@@ -366,6 +366,14 @@ textarea:focus, input[type="text"]:focus, input[type="email"]:focus {
 .scale-btn:hover { border-color: var(--verde); }
 .scale-btn.selected { background: var(--verde); border-color: var(--verde); color: var(--navy-profundo); }
 
+/* Escala "nps10": codigo de cores do NPS sempre visivel (nao so quando selecionado). */
+.scale-btn.band-red { border-color: var(--danger); color: var(--danger); }
+.scale-btn.band-amber { border-color: var(--amber-texto); color: var(--amber-texto); }
+.scale-btn.band-green { border-color: var(--verde-texto); color: var(--verde-texto); }
+.scale-btn.band-red.selected { background: var(--danger); border-color: var(--danger); color: #fff; }
+.scale-btn.band-amber.selected { background: var(--amber-texto); border-color: var(--amber-texto); color: #fff; }
+.scale-btn.band-green.selected { background: var(--verde); border-color: var(--verde); color: var(--navy-profundo); }
+
 .scale-anchors {
   display: flex;
   justify-content: space-between;

@@ -423,6 +423,20 @@ const SURVEYS = {
       ] },
     ],
   },
+  "webinar-reforma-tributaria": {
+    title: { pt: "Pesquisa · Webinar Reforma Tributária", en: "Survey · Tax Reform Webinar" },
+    audience: { pt: "Para participantes do webinar", en: "For webinar attendees" },
+    estimate: { pt: "1 a 2 minutos", en: "1 to 2 minutes" },
+    thankYou: { pt: "Obrigado pela participação! Suas respostas vão ajudar a melhorar os próximos webinars.", en: "Thank you for taking part! Your answers will help improve future webinars." },
+    eventName: "Webinar · Reforma Tributária e o Impacto em Gestoras de Private Markets",
+    eventSlug: "webinar-reforma-tributaria-2026",
+    questions: [
+      { id: "q1", type: "nps10", primary: true, text: { pt: "De 1 a 10, como você avalia o webinar?", en: "From 1 to 10, how would you rate the webinar?" } },
+      { id: "q2", type: "text", text: { pt: "Pontos positivos", en: "Positive points" }, optional: true },
+      { id: "q3", type: "text", text: { pt: "Aspectos de melhoria", en: "Areas for improvement" }, optional: true },
+      { id: "q4", type: "text", text: { pt: "Outros comentários", en: "Other comments" }, optional: true },
+    ],
+  },
 };
 
 function scaleAnchorsHtml(anchors) {
@@ -463,6 +477,15 @@ function renderQuestionHtml(q, index, dynamicOptions) {
 
   if (q.type === "nps" || q.type === "scale") {
     const buttons = Array.from({ length: 11 }, (_, n) => `<button type="button" class="scale-btn" data-value="${n}">${n}</button>`).join("");
+    body = `<div class="scale-row" data-qid="${q.id}">${buttons}</div>${scaleAnchorsHtml(q.anchors)}`;
+  } else if (q.type === "nps10") {
+    // Escala 1-10 (nao 0-10) com o codigo de cores classico do NPS sempre visivel nos botoes
+    // (nao so quando selecionado): 1-6 detrator (vermelho), 7-8 neutro (amarelo), 9-10 promotor (verde).
+    const buttons = Array.from({ length: 10 }, (_, i) => {
+      const n = i + 1;
+      const band = n <= 6 ? "band-red" : n <= 8 ? "band-amber" : "band-green";
+      return `<button type="button" class="scale-btn ${band}" data-value="${n}">${n}</button>`;
+    }).join("");
     body = `<div class="scale-row" data-qid="${q.id}">${buttons}</div>${scaleAnchorsHtml(q.anchors)}`;
   } else if (q.type === "single" || q.type === "multi") {
     const inputType = q.type === "single" ? "radio" : "checkbox";
@@ -566,7 +589,7 @@ function collectAnswers(root, survey) {
     const qEl = root.querySelector(`#question-${q.id}`);
     if (qEl.style.display === "none") return; // pergunta condicional oculta
 
-    if (q.type === "nps" || q.type === "scale") {
+    if (q.type === "nps" || q.type === "scale" || q.type === "nps10") {
       const row = root.querySelector(`.scale-row[data-qid="${q.id}"]`);
       if (row.dataset.value === undefined) {
         if (!q.optional) { qEl.classList.add("has-error"); valid = false; }

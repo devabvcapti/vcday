@@ -479,12 +479,11 @@ function renderQuestionHtml(q, index, dynamicOptions) {
     const buttons = Array.from({ length: 11 }, (_, n) => `<button type="button" class="scale-btn" data-value="${n}">${n}</button>`).join("");
     body = `<div class="scale-row" data-qid="${q.id}">${buttons}</div>${scaleAnchorsHtml(q.anchors)}`;
   } else if (q.type === "nps10") {
-    // Escala 1-10 (nao 0-10) com o codigo de cores classico do NPS sempre visivel nos botoes
-    // (nao so quando selecionado): 1-6 detrator (vermelho), 7-8 neutro (amarelo), 9-10 promotor (verde).
+    // Escala 1-10 (nao 0-10, unica diferenca do "nps"/"scale" normal) - mesmo visual neutro,
+    // so fica verde quando selecionado (sem cor fixa por faixa).
     const buttons = Array.from({ length: 10 }, (_, i) => {
       const n = i + 1;
-      const band = n <= 6 ? "band-red" : n <= 8 ? "band-amber" : "band-green";
-      return `<button type="button" class="scale-btn ${band}" data-value="${n}">${n}</button>`;
+      return `<button type="button" class="scale-btn" data-value="${n}">${n}</button>`;
     }).join("");
     body = `<div class="scale-row" data-qid="${q.id}">${buttons}</div>${scaleAnchorsHtml(q.anchors)}`;
   } else if (q.type === "single" || q.type === "multi") {
